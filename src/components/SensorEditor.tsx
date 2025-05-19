@@ -1,10 +1,16 @@
 import { Component, For } from 'solid-js'
 import { CageContext } from '../contexts/CageContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
-import { sensorTypeLabels } from '../types/SensorData'
+import { SensorData, sensorTypeLabels } from '../types/SensorData'
+import { SetStoreFunction } from 'solid-js/store'
+import { SensorContext } from '../contexts/SensorContext'
+import { getValidNumberInput } from '../util/getValidNumberInput'
 
-export const SensorEditor: Component<{}> = () => {
+export const SensorEditor: Component<{
+  setSensor: SetStoreFunction<SensorData>
+}> = (props) => {
   const cage = useContextOrThrow(CageContext)
+  const sensor = useContextOrThrow(SensorContext)
 
   return (
     <>
@@ -22,6 +28,13 @@ export const SensorEditor: Component<{}> = () => {
               placeholder="1"
               min="1"
               max="99"
+              onInput={(event) =>
+                props.setSensor(
+                  'routNumber',
+                  (prev) => getValidNumberInput(event.currentTarget, 1) ?? prev
+                )
+              }
+              value={sensor.routNumber}
             />
           </label>
           <p class="validator-hint mt-0">
@@ -33,7 +46,19 @@ export const SensorEditor: Component<{}> = () => {
         <div>
           <label class="select select-xs border w-full validator">
             <span class="label">Sensor Type:</span>
-            <select>
+            <select
+              onInput={(event) => {
+                if (!(event.currentTarget.value in sensorTypeLabels))
+                  throw new Error(
+                    `recieved "${event.currentTarget.value}" as a sensor type`
+                  )
+                props.setSensor(
+                  'type',
+                  event.currentTarget.value as keyof typeof sensorTypeLabels
+                )
+              }}
+              value={sensor.type}
+            >
               <For each={Object.entries(sensorTypeLabels)}>
                 {([internalTypeName, displayTypeName]) => (
                   <option value={internalTypeName}>{displayTypeName}</option>
@@ -55,6 +80,13 @@ export const SensorEditor: Component<{}> = () => {
               placeholder="0"
               min="0"
               max={cage.width}
+              onInput={(event) =>
+                props.setSensor(
+                  'xFeet',
+                  (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
+                )
+              }
+              value={sensor.xFeet}
             />
             <span class="label">feet</span>
           </label>
@@ -72,6 +104,13 @@ export const SensorEditor: Component<{}> = () => {
               min="0"
               placeholder="0"
               max={cage.height}
+              onInput={(event) =>
+                props.setSensor(
+                  'yFeet',
+                  (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
+                )
+              }
+              value={sensor.yFeet}
             />
             <span class="label">feet</span>
           </label>
@@ -89,6 +128,13 @@ export const SensorEditor: Component<{}> = () => {
               min="0"
               placeholder="0"
               max="360"
+              onInput={(event) =>
+                props.setSensor(
+                  'horizontalAngle',
+                  (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
+                )
+              }
+              value={sensor.horizontalAngle}
             />
             <span class="label">deg</span>
           </label>
@@ -106,6 +152,13 @@ export const SensorEditor: Component<{}> = () => {
               min="-180"
               placeholder="0"
               max="180"
+              onInput={(event) =>
+                props.setSensor(
+                  'verticalAngle',
+                  (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
+                )
+              }
+              value={sensor.verticalAngle}
             />
             <span class="label">deg</span>
           </label>

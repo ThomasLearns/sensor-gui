@@ -5,33 +5,43 @@ import { GridContext } from '../contexts/GridContext'
 import { SidebarContext } from '../contexts/SidebarContext'
 import { Portal } from 'solid-js/web'
 import { SensorEditor } from './SensorEditor'
+import { SetStoreFunction } from 'solid-js/store'
+import { SensorContext } from '../contexts/SensorContext'
 
 // color of elements comprising sensor svg
 const textColor = 'oklch(57.7% 0.245 27.325)'
 
 // Visual indicator for a sensor and its pings
 export const Sensor: Component<{
-  sensorData: SensorData
+  setSensor: SetStoreFunction<SensorData>
 }> = (props) => {
   // we need grid contextual data to scale feet to screen pixels
   const grid = useContextOrThrow(GridContext)
 
   const sidebar = useContextOrThrow(SidebarContext)
 
+  const sensor = useContextOrThrow(SensorContext)
+
   // calculate the position (screen pixels) of the sensor
-  const getX = createMemo(() => grid.getXScale()(props.sensorData.xFeet))
-  const getY = createMemo(() => grid.getYScale()(props.sensorData.yFeet))
+  const getX = createMemo(() => grid.getXScale()(sensor.xFeet))
+  const getY = createMemo(() => grid.getYScale()(sensor.yFeet))
 
   const [usingSidebar, setUsingSidebar] = createSignal(false)
 
+  // when the indicator is clicked, upon up a sidebar
+  // to edit the sensor's data
   function onClick(event: MouseEvent) {
     if (usingSidebar() === true) {
+      // close sidebar if already open
       sidebar.clearSidebar?.()
       return
     }
+
+    // prepare and open sidebar
     sidebar.clearSidebar?.(() => setUsingSidebar(false))
     setUsingSidebar(true)
 
+    // this click is handled. prevent it from propogating
     event.stopPropagation()
   }
 
@@ -60,14 +70,14 @@ export const Sensor: Component<{
           font-size="20"
           transform={`translate(${getX()}, ${getY()})`}
         >
-          {props.sensorData.routNumber}
+          {sensor.routNumber}
         </text>
         {/* circle around label */}
       </g>
       <Show when={usingSidebar() === true && sidebar.mount}>
         {(mountRef) => (
           <Portal mount={mountRef()}>
-            <SensorEditor />
+            <SensorEditor setSensor={props.setSensor} />
           </Portal>
         )}
       </Show>
