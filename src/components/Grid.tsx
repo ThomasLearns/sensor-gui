@@ -2,17 +2,18 @@ import { Component, createMemo, onMount } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { scaleLinear } from 'd3'
 import { GridAxes } from './GridAxes'
+import { GridContext } from '../contexts/GridContext'
+import { CageContext } from '../contexts/CageContext'
+import { GridBackground } from './GridBackground'
+import { useContextOrThrow } from '../util/useContextOrThrow'
 
 // handle displaying the cage grid view and everything in it
-export const Grid: Component<{
-  // take in the size (in feet) the cage is
-  size: {
-    x: number
-    y: number
-  }
-  // a 2D array giving each sector a label
-  sectorLabels: string[][]
-}> = (props) => {
+export const Grid: Component<{}> = () => {
+  const cage = useContextOrThrow(
+    CageContext,
+    'Could not get cage context information'
+  )
+
   // set how many pixels (per side) is set aside for rendering the axes
   const axisWidth = 35
 
@@ -33,18 +34,18 @@ export const Grid: Component<{
     // to us so we can determine which border of the allotted space the grid will follow
     // and which will have a gap
     const pixelWidthToHeightRatio = allottedPixels.x / allottedPixels.y
-    const feetWidthToHeightRatio = props.size.x / props.size.y
+    const feetWidthToHeightRatio = cage.width / cage.height
 
     // calculate the pixels we give per foot based on which dimension contstrains us the most
     const pixelPerFoot =
       pixelWidthToHeightRatio > feetWidthToHeightRatio
-        ? allottedPixels.y / props.size.y
-        : allottedPixels.x / props.size.x
+        ? allottedPixels.y / cage.height
+        : allottedPixels.x / cage.width
 
     // calculate a grid size that has a 1:1 ratio and uses as much allotted space as possible
     return {
-      x: props.size.x * pixelPerFoot - 2 * axisWidth,
-      y: props.size.y * pixelPerFoot - 2 * axisWidth,
+      x: cage.width * pixelPerFoot - 2 * axisWidth,
+      y: cage.height * pixelPerFoot - 2 * axisWidth,
     }
   })
 
@@ -81,11 +82,11 @@ export const Grid: Component<{
 
   // create a scale to convert a feet value to a pixel position in the x direction
   const xScale = createMemo(() =>
-    scaleLinear([0, props.size.x], [axisWidth, getGridSize().x + axisWidth])
+    scaleLinear([0, cage.width], [axisWidth, getGridSize().x + axisWidth])
   )
   // create a scale to convert a feet value to a pixel position in the y direction
   const yScale = createMemo(() =>
-    scaleLinear([0, props.size.y], [axisWidth, getGridSize().y + axisWidth])
+    scaleLinear([0, cage.height], [axisWidth, getGridSize().y + axisWidth])
   )
 
   return (
@@ -93,15 +94,23 @@ export const Grid: Component<{
       class="size-full"
       ref={gridRef}
     >
-      <svg class="size-full">
-        <GridAxes
-          axisWidth={axisWidth}
-          xScale={xScale()}
-          yScale={yScale()}
-          bottom={yScale()(props.size.y)}
-          right={xScale()(props.size.x)}
-        />
-      </svg>
+      <GridContext.Provider
+        value={{
+          scale: {
+            getX: xScale,
+            getY: yScale,
+          },
+          getLeft: createMemo(() => xScale()(0)),
+          getRight: createMemo(() => xScale()(cage.width)),
+          getTop: createMemo(() => yScale()(0)),
+          getBottom: createMemo(() => yScale()(cage.height)),
+        }}
+      >
+        <svg class="size-full">
+          <GridAxes axisWidth={axisWidth} />
+          <GridBackground />
+        </svg>
+      </GridContext.Provider>
     </div>
   )
 }
