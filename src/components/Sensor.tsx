@@ -38,9 +38,21 @@ export const Sensor: Component<{
     <>
       {/* <div class="gray"></div> */}
       <g>
+        <circle
+          r="15"
+          onClick={onClick}
+          class="cursor-pointer"
+          stroke={textColor}
+          stroke-width="1"
+          transform-origin="center"
+          transform={`translate(${getX()}, ${getY()})`}
+          fill-opacity={usingSidebar() === true ? '0.75' : '0'}
+          fill="white"
+        />
         {/* sensor label */}
         <text
           fill={textColor}
+          pointer-events="none"
           text-anchor="middle"
           dominant-baseline="middle"
           font-family="monospace"
@@ -50,16 +62,6 @@ export const Sensor: Component<{
           {props.sensorData.routNumber}
         </text>
         {/* circle around label */}
-        <circle
-          r="15"
-          onClick={onClick}
-          class="cursor-pointer"
-          stroke={textColor}
-          stroke-width="1"
-          transform-origin="center"
-          transform={`translate(${getX()}, ${getY()})`}
-          fill-opacity="0"
-        />
       </g>
       <Show when={usingSidebar() === true && sidebar.mount}>
         {(mountRef) => (
