@@ -7,6 +7,7 @@ import { CageContext } from '../contexts/CageContext'
 import { GridLines } from './GridLines'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { GridLabels } from './GridLabels'
+import { Sensors } from './Sensors'
 
 // handle displaying the cage grid view and everything in it
 export const Grid: Component<{}> = () => {
@@ -126,6 +127,7 @@ export const Grid: Component<{}> = () => {
           <GridAxes axisWidth={axisWidth} />
           <GridLines />
           <GridLabels />
+          <Sensors />
         </svg>
       </GridContext.Provider>
     </div>
