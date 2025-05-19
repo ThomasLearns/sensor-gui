@@ -24,11 +24,14 @@ export const Sidebar: Component<{
     createEffect(() => props.setSidebarContext('mount', contentMount))
 
     // create the function that cleans up the sidebar
-    props.setSidebarContext('clearSidebar', (cleanup?: () => unknown) => {
-      contentCleanup() // let the source of the sidebar content cleanup
-      contentMount.replaceChildren() // remove any leftover children
-      contentCleanup = cleanup ?? (() => {}) // store the new cleanup function
-    })
+    props.setSidebarContext(
+      'clearSidebar',
+      (_: unknown) => (cleanup?: () => unknown) => {
+        contentCleanup() // let the source of the sidebar content cleanup
+        contentMount.replaceChildren() // remove any leftover children
+        contentCleanup = cleanup ?? (() => {}) // store the new cleanup function
+      }
+    )
   })
 
   return (

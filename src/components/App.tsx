@@ -43,11 +43,17 @@ export const App: Component<Record<string, never>> = () => {
   return (
     <>
       <div class="w-screen h-screen flex bg-background">
-        <SidebarContext.Provider value={sidebar}>
-          <CageContext.Provider value={cage}>
-            <Grid />
-          </CageContext.Provider>
-        </SidebarContext.Provider>
+        {/* unhandled clicks in this dev will close the sidebar */}
+        <div
+          class="size-full"
+          onClick={() => sidebar.clearSidebar?.()}
+        >
+          <SidebarContext.Provider value={sidebar}>
+            <CageContext.Provider value={cage}>
+              <Grid />
+            </CageContext.Provider>
+          </SidebarContext.Provider>
+        </div>
         <Sidebar setSidebarContext={setSidebar} />
       </div>
     </>

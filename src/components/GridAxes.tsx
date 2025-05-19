@@ -37,6 +37,7 @@ export const GridAxes: Component<{
     axis.selectAll('line').style('stroke', axisColor)
     axis.selectAll('path').style('stroke', axisColor)
     axis.selectAll('text').style('fill', axisColor)
+    axis.selectAll('text').style('cursor', 'default')
   }
 
   // on any changes, have d3 recalculate the rendering of the axes

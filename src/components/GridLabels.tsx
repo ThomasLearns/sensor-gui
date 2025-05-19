@@ -21,6 +21,7 @@ export const GridLabels: Component<{}> = () => {
               <>
                 {/* place the label centered in its sector */}
                 <text
+                  class="cursor-default"
                   transform={`translate(${
                     grid.left + (columnIndex() + 0.5) * grid.columnWidth
                   }, ${grid.top + (rowIndex() + 0.5) * grid.rowHeight})`}
