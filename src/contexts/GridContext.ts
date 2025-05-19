@@ -1,13 +1,21 @@
 import { ScaleLinear } from 'd3'
 import { Accessor, createContext } from 'solid-js'
 
-export const GridContext = createContext<{
-  scale: {
-    getX: Accessor<ScaleLinear<number, number, never>>
-    getY: Accessor<ScaleLinear<number, number, never>>
-  }
-  getTop: Accessor<number>
-  getBottom: Accessor<number>
-  getLeft: Accessor<number>
-  getRight: Accessor<number>
-}>()
+// context information for the grid (with respect to the screen)
+export type GridData = {
+  // the scales require accessors because a solidjs store cannot
+  // make them reactive by itself
+  getXScale: Accessor<ScaleLinear<number, number, never>>
+  getYScale: Accessor<ScaleLinear<number, number, never>>
+  // positions (pixels) of the sides of the grid. derived from the scales
+  top: number
+  bottom: number
+  left: number
+  right: number
+  // size of rows and columns (in pixels).
+  // derived from the scales and cage context information
+  rowHeight: number
+  columnWidth: number
+}
+
+export const GridContext = createContext<GridData>()

@@ -39,10 +39,10 @@ export const GridAxes: Component<{
     )
       return
 
-    select(topAxisRef).call(axisTop(gridContext.scale.getX()))
-    select(bottomAxisRef).call(axisBottom(gridContext.scale.getX()))
-    select(leftAxisRef).call(axisLeft(gridContext.scale.getY()))
-    select(rightAxisRef).call(axisRight(gridContext.scale.getY()))
+    select(topAxisRef).call(axisTop(gridContext.getXScale()))
+    select(bottomAxisRef).call(axisBottom(gridContext.getXScale()))
+    select(leftAxisRef).call(axisLeft(gridContext.getYScale()))
+    select(rightAxisRef).call(axisRight(gridContext.getYScale()))
   })
   return (
     <>
@@ -54,7 +54,7 @@ export const GridAxes: Component<{
       {/* bottom axis */}
       <g
         ref={bottomAxisRef}
-        transform={`translate(0, ${gridContext.getBottom() + padding})`}
+        transform={`translate(0, ${gridContext.bottom + padding})`}
       />
       {/* left axis */}
       <g
@@ -64,7 +64,7 @@ export const GridAxes: Component<{
       {/* right axis */}
       <g
         ref={rightAxisRef}
-        transform={`translate(${gridContext.getRight() + padding}, 0)`}
+        transform={`translate(${gridContext.right + padding}, 0)`}
       />
     </>
   )

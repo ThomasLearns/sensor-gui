@@ -1,10 +1,10 @@
-import { Component, createMemo, onMount } from 'solid-js'
+import { Component, createEffect, createMemo, onMount } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { scaleLinear } from 'd3'
 import { GridAxes } from './GridAxes'
-import { GridContext } from '../contexts/GridContext'
+import { GridContext, GridData } from '../contexts/GridContext'
 import { CageContext } from '../contexts/CageContext'
-import { GridBackground } from './GridBackground'
+import { GridLines } from './GridLines'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 
 // handle displaying the cage grid view and everything in it
@@ -81,12 +81,38 @@ export const Grid: Component<{}> = () => {
   })
 
   // create a scale to convert a feet value to a pixel position in the x direction
-  const xScale = createMemo(() =>
+  const getXScale = createMemo(() =>
     scaleLinear([0, cage.width], [axisWidth, getGridSize().x + axisWidth])
   )
   // create a scale to convert a feet value to a pixel position in the y direction
-  const yScale = createMemo(() =>
+  const getYScale = createMemo(() =>
     scaleLinear([0, cage.height], [axisWidth, getGridSize().y + axisWidth])
+  )
+
+  // create the store carrying the contextual grid data
+  const [grid, setGrid] = createStore<GridData>({
+    getXScale,
+    getYScale,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    rowHeight: 0,
+    columnWidth: 0,
+  })
+  // keep the grid context information up to date
+  createEffect(() => setGrid('left', getXScale()(0)))
+  createEffect(() => setGrid('right', getXScale()(cage.width)))
+  createEffect(() => setGrid('top', getYScale()(0)))
+  createEffect(() => setGrid('bottom', getYScale()(cage.height)))
+  createEffect(() =>
+    setGrid('rowHeight', getYScale()(cage.height / cage.rowCount) - grid.top)
+  )
+  createEffect(() =>
+    setGrid(
+      'columnWidth',
+      getXScale()(cage.width / cage.columnCount) - grid.left
+    )
   )
 
   return (
@@ -94,21 +120,10 @@ export const Grid: Component<{}> = () => {
       class="size-full"
       ref={gridRef}
     >
-      <GridContext.Provider
-        value={{
-          scale: {
-            getX: xScale,
-            getY: yScale,
-          },
-          getLeft: createMemo(() => xScale()(0)),
-          getRight: createMemo(() => xScale()(cage.width)),
-          getTop: createMemo(() => yScale()(0)),
-          getBottom: createMemo(() => yScale()(cage.height)),
-        }}
-      >
+      <GridContext.Provider value={grid}>
         <svg class="size-full">
           <GridAxes axisWidth={axisWidth} />
-          <GridBackground />
+          <GridLines />
         </svg>
       </GridContext.Provider>
     </div>
