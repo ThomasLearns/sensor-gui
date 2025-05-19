@@ -38,7 +38,7 @@ export const Sidebar: Component<{
     <>
       <div
         ref={contentMount}
-        class="flex-none w-min h-full bg-element rounded-l-sm *:m-4"
+        class="flex-none w-min h-full overflow-y-auto bg-element rounded-l-sm *:m-4"
       />
     </>
   )

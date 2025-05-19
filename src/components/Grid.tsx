@@ -119,7 +119,7 @@ export const Grid: Component<{}> = () => {
 
   return (
     <div
-      class="size-full"
+      class="size-full select-none"
       ref={gridRef}
     >
       <GridContext.Provider value={grid}>

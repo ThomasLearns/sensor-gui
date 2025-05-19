@@ -4,6 +4,7 @@ import { useContextOrThrow } from '../util/useContextOrThrow'
 import { GridContext } from '../contexts/GridContext'
 import { SidebarContext } from '../contexts/SidebarContext'
 import { Portal } from 'solid-js/web'
+import { SensorEditor } from './SensorEditor'
 
 // color of elements comprising sensor svg
 const textColor = 'oklch(57.7% 0.245 27.325)'
@@ -66,7 +67,7 @@ export const Sensor: Component<{
       <Show when={usingSidebar() === true && sidebar.mount}>
         {(mountRef) => (
           <Portal mount={mountRef()}>
-            <div>test</div>
+            <SensorEditor />
           </Portal>
         )}
       </Show>
