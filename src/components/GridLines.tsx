@@ -3,7 +3,7 @@ import { CageContext } from '../contexts/CageContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { GridContext } from '../contexts/GridContext'
 
-const strokeColor = 'black'
+const strokeColor = 'white'
 
 // display the lines and labels comprising the grid's background
 export const GridLines: Component<{}> = () => {

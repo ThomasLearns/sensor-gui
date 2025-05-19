@@ -1,4 +1,4 @@
-import { axisBottom, axisLeft, axisRight, axisTop, select } from 'd3'
+import { axisBottom, axisLeft, axisRight, axisTop, select, Selection } from 'd3'
 import { Component, createEffect } from 'solid-js'
 import { GridContext } from '../contexts/GridContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
@@ -7,6 +7,9 @@ import { useContextOrThrow } from '../util/useContextOrThrow'
 // the actual padding is driven as well by the axis width allocated
 // by the Grid component
 const maximumPadding = 5
+
+// color of axes
+const axisColor = 'white'
 
 export const GridAxes: Component<{
   axisWidth: number
@@ -29,6 +32,13 @@ export const GridAxes: Component<{
   const margin =
     props.axisWidth >= maximumPadding ? props.axisWidth - maximumPadding : 0
 
+  // used to set the color of all parts of a d3 axis
+  function colorAxis(axis: Selection<SVGGElement, unknown, null, undefined>) {
+    axis.selectAll('line').style('stroke', axisColor)
+    axis.selectAll('path').style('stroke', axisColor)
+    axis.selectAll('text').style('fill', axisColor)
+  }
+
   // on any changes, have d3 recalculate the rendering of the axes
   createEffect(() => {
     if (
@@ -39,10 +49,10 @@ export const GridAxes: Component<{
     )
       return
 
-    select(topAxisRef).call(axisTop(gridContext.getXScale()))
-    select(bottomAxisRef).call(axisBottom(gridContext.getXScale()))
-    select(leftAxisRef).call(axisLeft(gridContext.getYScale()))
-    select(rightAxisRef).call(axisRight(gridContext.getYScale()))
+    colorAxis(select(topAxisRef).call(axisTop(gridContext.getXScale())))
+    colorAxis(select(bottomAxisRef).call(axisBottom(gridContext.getXScale())))
+    colorAxis(select(leftAxisRef).call(axisLeft(gridContext.getYScale())))
+    colorAxis(select(rightAxisRef).call(axisRight(gridContext.getYScale())))
   })
   return (
     <>
