@@ -23,14 +23,14 @@ export const CreateSensorButton: Component<{}> = () => {
   return (
     <>
       <div
-        class="tooltip tooltip-bottom"
+        class="tooltip tooltip-bottom tooltip-success"
         data-tip="Add Sensor"
       >
         <button
           onClick={createNewSensor}
           class="btn btn-outline btn-square btn-primary btn-sm"
         >
-          <VsAdd stroke-width="5" />
+          <VsAdd size="20" />
         </button>
       </div>
     </>

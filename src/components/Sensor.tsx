@@ -47,7 +47,7 @@ export const Sensor: Component<{
 
   return (
     <>
-      <g class="stroke-primary fill-base-200">
+      <g class="stroke-secondary fill-base-200">
         <circle
           r="15"
           onClick={onClick}
@@ -58,7 +58,7 @@ export const Sensor: Component<{
           fill-opacity="0.9"
         />
       </g>
-      <g class="fill-primary cursor-pointer">
+      <g class="fill-secondary cursor-pointer">
         {/* sensor label */}
         <text
           onClick={onClick}

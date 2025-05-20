@@ -1,16 +1,21 @@
-import { Component, For } from 'solid-js'
+import { Component, createSignal, For } from 'solid-js'
 import { CageContext } from '../contexts/CageContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { SensorData, sensorTypeLabels } from '../types/SensorData'
 import { SetStoreFunction } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext'
 import { getValidNumberInput } from '../util/getValidNumberInput'
+import { VsTrash } from 'solid-icons/vs'
+import { SensorsContext } from '../contexts/SensorsContext'
 
 export const SensorEditor: Component<{
   setSensor: SetStoreFunction<SensorData>
 }> = (props) => {
   const cage = useContextOrThrow(CageContext)
   const sensor = useContextOrThrow(SensorContext)
+  const sensors = useContextOrThrow(SensorsContext)
+
+  let deleteConfirmRef: undefined | HTMLDialogElement
 
   return (
     <>
@@ -164,6 +169,47 @@ export const SensorEditor: Component<{
           </label>
           <p class="validator-hint mt-1">Must be between -180 and 180</p>
         </div>
+
+        {/* delete button */}
+        <div
+          class="tooltip tooltip-error size-min tooltip-right"
+          data-tip="Delete Sensor"
+        >
+          <button
+            class="btn btn-sm btn-secondary btn-square btn-outline"
+            onClick={() => deleteConfirmRef?.showModal()}
+          >
+            <VsTrash size="20" />
+          </button>
+        </div>
+        {/* delete confirmation */}
+        <dialog
+          ref={deleteConfirmRef}
+          class="modal"
+        >
+          <div class="modal-box">
+            <h3 class="font-bold text-lg">
+              Are you sure that you want to delete sensor #{sensor.routNumber}?
+            </h3>
+            <p class="py-4"></p>
+            <div class="modal-action">
+              <form method="dialog">
+                <button
+                  onClick={() => {
+                    sensors.setSensors((prev) =>
+                      prev.toSpliced(sensor.index(), 1)
+                    )
+                    console.log('deleting?')
+                  }}
+                  class="btn"
+                >
+                  Yes
+                </button>
+                <button class="btn">No</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
       </div>
     </>
   )
