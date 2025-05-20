@@ -7,6 +7,7 @@ import { SidebarContext, SidebarData } from '../contexts/SidebarContext'
 import { SensorData } from '../types/SensorData'
 import { CreateSensorButton } from './CreateSensorButton'
 import { SensorsContext } from '../contexts/SensorsContext'
+import { UltrasonicRenderer } from './UltrasonicRenderer'
 
 // this is the top level component of the renderer. It is inserted into the root element
 // (a div inside <body>)
@@ -51,6 +52,7 @@ export const App: Component<Record<string, never>> = () => {
       verticalAngle: 0,
       routNumber: 12,
       type: 'ultrasonic',
+      renderer: UltrasonicRenderer,
     },
   ])
 

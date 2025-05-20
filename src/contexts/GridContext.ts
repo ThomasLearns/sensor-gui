@@ -7,6 +7,9 @@ export type GridData = {
   // make them reactive by itself
   getXScale: Accessor<ScaleLinear<number, number, never>>
   getYScale: Accessor<ScaleLinear<number, number, never>>
+
+  pixelsPerFoot: number
+
   // positions (pixels) of the sides of the grid. derived from the scales
   top: number
   bottom: number

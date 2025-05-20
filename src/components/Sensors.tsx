@@ -1,4 +1,4 @@
-import { Component, For } from 'solid-js'
+import { Component, createEffect, For } from 'solid-js'
 import { Sensor } from './Sensor'
 import { createStore } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext'
@@ -15,7 +15,7 @@ export const Sensors: Component<{}> = () => {
       <For each={sensors.sensors}>
         {(sensor, index) => (
           <>
-            <SensorContext.Provider value={{ ...sensor, index }}>
+            <SensorContext.Provider value={{ data: sensor, index: index }}>
               <Sensor setSensor={createStore(sensor)[1]} />
             </SensorContext.Provider>
           </>

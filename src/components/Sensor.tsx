@@ -23,8 +23,8 @@ export const Sensor: Component<{
   const sensor = useContextOrThrow(SensorContext)
 
   // calculate the position (screen pixels) of the sensor
-  const getX = createMemo(() => grid.getXScale()(sensor.xFeet))
-  const getY = createMemo(() => grid.getYScale()(sensor.yFeet))
+  const getX = createMemo(() => grid.getXScale()(sensor.data.xFeet))
+  const getY = createMemo(() => grid.getYScale()(sensor.data.yFeet))
 
   const [usingSidebar, setUsingSidebar] = createSignal(false)
 
@@ -47,18 +47,18 @@ export const Sensor: Component<{
 
   return (
     <>
-      <g class="stroke-secondary fill-base-200">
+      <g class="stroke-primary fill-base-200">
         <circle
-          r="15"
+          r="1rem"
           onClick={onClick}
           class="cursor-pointer"
           stroke-width={usingSidebar() === true ? '1' : '0'}
           transform-origin="center"
           transform={`translate(${getX()}, ${getY()})`}
-          fill-opacity="0.9"
+          fill-opacity="0.8"
         />
       </g>
-      <g class="fill-secondary cursor-pointer">
+      <g class="fill-primary cursor-pointer">
         {/* sensor label */}
         <text
           onClick={onClick}
@@ -68,7 +68,7 @@ export const Sensor: Component<{
           font-size="20"
           transform={`translate(${getX()}, ${getY()})`}
         >
-          {sensor.routNumber}
+          {sensor.data.routNumber}
         </text>
         {/* circle around label */}
       </g>
@@ -79,6 +79,7 @@ export const Sensor: Component<{
           </Portal>
         )}
       </Show>
+      <sensor.data.renderer />
     </>
   )
 }

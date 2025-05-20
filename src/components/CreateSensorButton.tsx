@@ -2,6 +2,7 @@ import { VsAdd } from 'solid-icons/vs'
 import { Component } from 'solid-js'
 import { SensorsContext } from '../contexts/SensorsContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
+import { UltrasonicRenderer } from './UltrasonicRenderer'
 
 // a button that creates a sensor
 export const CreateSensorButton: Component<{}> = () => {
@@ -17,6 +18,7 @@ export const CreateSensorButton: Component<{}> = () => {
       verticalAngle: 0,
       routNumber: 1,
       type: 'ultrasonic',
+      renderer: UltrasonicRenderer,
     })
   }
 

@@ -95,6 +95,7 @@ export const Grid: Component<{}> = () => {
   const [grid, setGrid] = createStore<GridData>({
     getXScale,
     getYScale,
+    pixelsPerFoot: 0,
     left: 0,
     right: 0,
     top: 0,
@@ -103,6 +104,7 @@ export const Grid: Component<{}> = () => {
     columnWidth: 0,
   })
   // keep the grid context information up to date
+  createEffect(() => setGrid('pixelsPerFoot', getXScale()(1) - getXScale()(0)))
   createEffect(() => setGrid('left', getXScale()(0)))
   createEffect(() => setGrid('right', getXScale()(cage.width)))
   createEffect(() => setGrid('top', getYScale()(cage.height)))

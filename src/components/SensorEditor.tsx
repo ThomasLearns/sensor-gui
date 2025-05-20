@@ -33,13 +33,14 @@ export const SensorEditor: Component<{
               placeholder="1"
               min="1"
               max="99"
-              onInput={(event) =>
-                props.setSensor(
+              onInput={(event) => {
+                sensors.setSensors(
+                  sensor.index(),
                   'routNumber',
                   (prev) => getValidNumberInput(event.currentTarget, 1) ?? prev
                 )
-              }
-              value={sensor.routNumber}
+              }}
+              value={sensor.data.routNumber}
             />
           </label>
           <p class="validator-hint mt-0">
@@ -57,12 +58,13 @@ export const SensorEditor: Component<{
                   throw new Error(
                     `recieved "${event.currentTarget.value}" as a sensor type`
                   )
-                props.setSensor(
+                sensors.setSensors(
+                  sensor.index(),
                   'type',
                   event.currentTarget.value as keyof typeof sensorTypeLabels
                 )
               }}
-              value={sensor.type}
+              value={sensor.data.type}
             >
               <For each={Object.entries(sensorTypeLabels)}>
                 {([internalTypeName, displayTypeName]) => (
@@ -86,12 +88,13 @@ export const SensorEditor: Component<{
               min="0"
               max={cage.width}
               onInput={(event) =>
-                props.setSensor(
+                sensors.setSensors(
+                  sensor.index(),
                   'xFeet',
                   (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
                 )
               }
-              value={sensor.xFeet}
+              value={sensor.data.xFeet}
             />
             <span class="label">feet</span>
           </label>
@@ -110,12 +113,13 @@ export const SensorEditor: Component<{
               placeholder="0"
               max={cage.height}
               onInput={(event) =>
-                props.setSensor(
+                sensors.setSensors(
+                  sensor.index(),
                   'yFeet',
                   (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
                 )
               }
-              value={sensor.yFeet}
+              value={sensor.data.yFeet}
             />
             <span class="label">feet</span>
           </label>
@@ -130,20 +134,19 @@ export const SensorEditor: Component<{
               type="number"
               step="any"
               class="text-right"
-              min="0"
               placeholder="0"
-              max="360"
               onInput={(event) =>
-                props.setSensor(
+                sensors.setSensors(
+                  sensor.index(),
                   'horizontalAngle',
                   (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
                 )
               }
-              value={sensor.horizontalAngle}
+              value={sensor.data.horizontalAngle}
             />
             <span class="label">deg</span>
           </label>
-          <p class="validator-hint mt-1">Must be between 0 and 360</p>
+          <p class="validator-hint mt-1">Invalid</p>
         </div>
 
         {/* vertical angle */}
@@ -154,20 +157,21 @@ export const SensorEditor: Component<{
               type="number"
               step="any"
               class="text-right"
-              min="-180"
+              min="-90"
               placeholder="0"
-              max="180"
+              max="90"
               onInput={(event) =>
-                props.setSensor(
+                sensors.setSensors(
+                  sensor.index(),
                   'verticalAngle',
                   (prev) => getValidNumberInput(event.currentTarget, 0) ?? prev
                 )
               }
-              value={sensor.verticalAngle}
+              value={sensor.data.verticalAngle}
             />
             <span class="label">deg</span>
           </label>
-          <p class="validator-hint mt-1">Must be between -180 and 180</p>
+          <p class="validator-hint mt-1">Must be between -90 and 90</p>
         </div>
 
         {/* delete button */}
@@ -176,7 +180,7 @@ export const SensorEditor: Component<{
           data-tip="Delete Sensor"
         >
           <button
-            class="btn btn-sm btn-secondary btn-square btn-outline"
+            class="btn btn-sm btn-primary btn-square btn-outline"
             onClick={() => deleteConfirmRef?.showModal()}
           >
             <VsTrash size="20" />
@@ -189,18 +193,18 @@ export const SensorEditor: Component<{
         >
           <div class="modal-box">
             <h3 class="font-bold text-lg">
-              Are you sure that you want to delete sensor #{sensor.routNumber}?
+              Are you sure that you want to delete sensor #
+              {sensor.data.routNumber}?
             </h3>
             <p class="py-4"></p>
             <div class="modal-action">
               <form method="dialog">
                 <button
-                  onClick={() => {
+                  onClick={() =>
                     sensors.setSensors((prev) =>
                       prev.toSpliced(sensor.index(), 1)
                     )
-                    console.log('deleting?')
-                  }}
+                  }
                   class="btn"
                 >
                   Yes

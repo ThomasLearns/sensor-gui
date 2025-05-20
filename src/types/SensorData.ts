@@ -1,5 +1,10 @@
+import { Component } from 'solid-js'
+
 export type UltrasonicData = {
   type: 'ultrasonic'
+  renderer: Component<{
+    handlePing?: (distance: number) => void
+  }>
 }
 
 export type SensorType = UltrasonicData
