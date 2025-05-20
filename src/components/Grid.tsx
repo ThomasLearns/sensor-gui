@@ -88,7 +88,7 @@ export const Grid: Component<{}> = () => {
   )
   // create a scale to convert a feet value to a pixel position in the y direction
   const getYScale = createMemo(() =>
-    scaleLinear([0, cage.height], [axisWidth, getGridSize().y + axisWidth])
+    scaleLinear([0, cage.height], [getGridSize().y + axisWidth, axisWidth])
   )
 
   // create the store carrying the contextual grid data
@@ -105,10 +105,10 @@ export const Grid: Component<{}> = () => {
   // keep the grid context information up to date
   createEffect(() => setGrid('left', getXScale()(0)))
   createEffect(() => setGrid('right', getXScale()(cage.width)))
-  createEffect(() => setGrid('top', getYScale()(0)))
-  createEffect(() => setGrid('bottom', getYScale()(cage.height)))
+  createEffect(() => setGrid('top', getYScale()(cage.height)))
+  createEffect(() => setGrid('bottom', getYScale()(0)))
   createEffect(() =>
-    setGrid('rowHeight', getYScale()(cage.height / cage.rowCount) - grid.top)
+    setGrid('rowHeight', grid.bottom - getYScale()(cage.height / cage.rowCount))
   )
   createEffect(() =>
     setGrid(
