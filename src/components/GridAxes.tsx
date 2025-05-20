@@ -8,9 +8,6 @@ import { useContextOrThrow } from '../util/useContextOrThrow'
 // by the Grid component
 const maximumPadding = 5
 
-// color of axes
-const axisColor = 'white'
-
 export const GridAxes: Component<{
   axisWidth: number
 }> = (props) => {
@@ -34,9 +31,9 @@ export const GridAxes: Component<{
 
   // used to set the color of all parts of a d3 axis
   function colorAxis(axis: Selection<SVGGElement, unknown, null, undefined>) {
-    axis.selectAll('line').style('stroke', axisColor)
-    axis.selectAll('path').style('stroke', axisColor)
-    axis.selectAll('text').style('fill', axisColor)
+    axis.selectAll('line').style('stroke', 'currentColor')
+    axis.selectAll('path').style('stroke', 'currentColor')
+    axis.selectAll('text').style('fill', 'currentColor')
     axis.selectAll('text').style('cursor', 'default')
   }
 

@@ -9,7 +9,7 @@ import { SetStoreFunction } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext'
 
 // color of elements comprising sensor svg
-const textColor = 'oklch(57.7% 0.245 27.325)'
+// const textColor = 'oklch(57.7% 0.245 27.325)'
 
 // Visual indicator for a sensor and its pings
 export const Sensor: Component<{
@@ -47,23 +47,21 @@ export const Sensor: Component<{
 
   return (
     <>
-      {/* <div class="gray"></div> */}
-      <g>
+      <g class="stroke-primary fill-base-300">
         <circle
           r="15"
           onClick={onClick}
           class="cursor-pointer"
-          stroke={textColor}
-          stroke-width="1"
+          stroke-width={usingSidebar() === true ? '1' : '0'}
           transform-origin="center"
           transform={`translate(${getX()}, ${getY()})`}
-          fill-opacity={usingSidebar() === true ? '0.75' : '0'}
-          fill="white"
+          fill-opacity="0.9"
         />
+      </g>
+      <g class="fill-primary cursor-pointer">
         {/* sensor label */}
         <text
-          fill={textColor}
-          pointer-events="none"
+          onClick={onClick}
           text-anchor="middle"
           dominant-baseline="middle"
           font-family="monospace"

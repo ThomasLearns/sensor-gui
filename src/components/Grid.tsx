@@ -123,7 +123,7 @@ export const Grid: Component<{}> = () => {
       ref={gridRef}
     >
       <GridContext.Provider value={grid}>
-        <svg class="size-full">
+        <svg class="size-full text-base-content">
           <GridAxes axisWidth={axisWidth} />
           <GridLines />
           <GridLabels />

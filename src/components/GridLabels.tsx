@@ -3,8 +3,6 @@ import { CageContext } from '../contexts/CageContext'
 import { GridContext } from '../contexts/GridContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 
-const labelColor = 'white'
-
 // display the labels for each grid sector
 export const GridLabels: Component<{}> = () => {
   // load contextual information for the cage and grid
@@ -27,7 +25,7 @@ export const GridLabels: Component<{}> = () => {
                   }, ${grid.top + (rowIndex() + 0.5) * grid.rowHeight})`}
                   text-anchor="middle"
                   font-family="Arial, sans-serif"
-                  fill={labelColor}
+                  fill="currentColor"
                   dominant-baseline="middle"
                 >
                   {label}
