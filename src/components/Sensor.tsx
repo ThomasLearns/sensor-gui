@@ -47,7 +47,7 @@ export const Sensor: Component<{
 
   return (
     <>
-      <g class="stroke-primary fill-base-300">
+      <g class="stroke-primary fill-base-200">
         <circle
           r="15"
           onClick={onClick}
