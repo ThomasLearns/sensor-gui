@@ -3,6 +3,7 @@ import { Component } from 'solid-js'
 import { SensorsContext } from '../contexts/SensorsContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { UltrasonicRenderer } from './UltrasonicRenderer'
+import { SensorData } from '../types/SensorData'
 
 // a button that creates a sensor
 export const CreateSensorButton: Component<{}> = () => {
@@ -11,7 +12,7 @@ export const CreateSensorButton: Component<{}> = () => {
 
   // called on click
   function createNewSensor() {
-    sensors.setSensors(sensors.sensors.length, {
+    const newSensor: SensorData = {
       xFeet: 0,
       yFeet: 0,
       horizontalAngle: 0,
@@ -19,7 +20,11 @@ export const CreateSensorButton: Component<{}> = () => {
       routNumber: 1,
       type: 'ultrasonic',
       renderer: UltrasonicRenderer,
-    })
+      measuringAngle: 15,
+      maxRange: 4,
+    }
+
+    sensors.setSensors(sensors.sensors.length, newSensor)
   }
 
   return (

@@ -5,6 +5,8 @@ export type UltrasonicData = {
   renderer: Component<{
     handlePing?: (distance: number) => void
   }>
+  measuringAngle: number
+  maxRange: number
 }
 
 export type SensorType = UltrasonicData

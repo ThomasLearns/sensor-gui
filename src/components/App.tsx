@@ -53,6 +53,8 @@ export const App: Component<Record<string, never>> = () => {
       routNumber: 12,
       type: 'ultrasonic',
       renderer: UltrasonicRenderer,
+      measuringAngle: 15,
+      maxRange: 4,
     },
   ])
 

@@ -5,4 +5,8 @@ import { Accessor, createContext } from 'solid-js'
 export const SensorContext = createContext<{
   data: SensorData
   index: Accessor<number>
+  calculate: {
+    theta: Accessor<number>
+    phi: Accessor<number>
+  }
 }>()
