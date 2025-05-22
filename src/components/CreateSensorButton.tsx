@@ -1,5 +1,5 @@
 import { VsAdd } from 'solid-icons/vs'
-import { Component } from 'solid-js'
+import { Component, createSignal } from 'solid-js'
 import { SensorsContext } from '../contexts/SensorsContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { UltrasonicRenderer } from './UltrasonicRenderer'
@@ -12,6 +12,9 @@ export const CreateSensorButton: Component<{}> = () => {
 
   // called on click
   function createNewSensor() {
+    const [pingHandler, setPingHandler] = createSignal<
+      undefined | ((centimeters: number) => void)
+    >()
     const newSensor: SensorData = {
       xFeet: 0,
       yFeet: 0,
@@ -22,6 +25,8 @@ export const CreateSensorButton: Component<{}> = () => {
       renderer: UltrasonicRenderer,
       measuringAngle: 15,
       maxRange: 4,
+      getPingHandler: pingHandler,
+      setPingHandler,
     }
 
     sensors.setSensors(sensors.sensors.length, newSensor)

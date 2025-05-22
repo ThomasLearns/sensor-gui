@@ -6,6 +6,7 @@ import { useContextOrThrow } from '../util/useContextOrThrow'
 import { BeamContours } from './BeamContours'
 import { BeamEdgeClipPath } from './BeamEdgeClipPath'
 import { BeamRangeClipPath } from './BeamRangeClipPath'
+import { BeamPings } from './BeamPings'
 
 export const Beam: Component<{}> = () => {
   const cage = useContextOrThrow(CageContext)
@@ -23,6 +24,14 @@ export const Beam: Component<{}> = () => {
       grid.pixelsPerFoot *
       Math.sqrt(Math.pow(cage.width, 2) + Math.pow(cage.height, 2))
   )
+
+  // ping testing. will be replaced by receiving pings from main process
+  const test = () => {
+    sensor.data.getPingHandler()?.(100)
+    setTimeout(test, 2000)
+    // console.log(sensor.data.getPingHandler)
+  }
+  test()
 
   return (
     <>
@@ -45,6 +54,7 @@ export const Beam: Component<{}> = () => {
         />
       </g>
       <BeamContours clip-path={`url(#${getBeamClipPathId()})`} />
+      <BeamPings clip-path={`url(#${getBeamClipPathId()})`} />
     </>
   )
 }

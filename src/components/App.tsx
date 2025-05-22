@@ -1,4 +1,4 @@
-import { Component, createEffect } from 'solid-js'
+import { Component, createEffect, createSignal, on } from 'solid-js'
 import { Grid } from './Grid'
 import { CageContext, CageData } from '../contexts/CageContext'
 import { createStore } from 'solid-js/store'
@@ -44,6 +44,10 @@ export const App: Component<Record<string, never>> = () => {
     mount: undefined,
   })
 
+  // for testing only
+  const [pingHandler, setPingHandler] = createSignal<
+    undefined | ((centimeters: number) => void)
+  >()
   const [sensors, setSensors] = createStore<SensorData[]>([
     {
       xFeet: 5,
@@ -55,6 +59,8 @@ export const App: Component<Record<string, never>> = () => {
       renderer: UltrasonicRenderer,
       measuringAngle: 15,
       maxRange: 4,
+      getPingHandler: pingHandler,
+      setPingHandler,
     },
   ])
 
