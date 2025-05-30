@@ -192,12 +192,11 @@ export const SensorEditor: Component<{
           class="modal"
         >
           <div class="modal-box">
-            <h3 class="font-bold text-lg">
+            <h3 class="font-bold text-lg text-center">
               Are you sure that you want to delete sensor #
               {sensor.data.routNumber}?
             </h3>
-            <p class="py-4"></p>
-            <div class="modal-action">
+            <div class="modal-action justify-center">
               <form method="dialog">
                 <button
                   onClick={() =>
@@ -205,7 +204,7 @@ export const SensorEditor: Component<{
                       prev.toSpliced(sensor.index(), 1)
                     )
                   }
-                  class="btn"
+                  class="btn mr-2"
                 >
                   Yes
                 </button>
