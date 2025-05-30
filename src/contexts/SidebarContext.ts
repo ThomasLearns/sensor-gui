@@ -1,7 +1,7 @@
 import { Component, createContext, Setter } from 'solid-js'
 
 export type SidebarData = {
-  setSidebar: Setter<Component>
+  setSidebar: (newComponent?: Component, cleanup?: () => unknown) => unknown
 }
 
 export const SidebarContext = createContext<SidebarData>()

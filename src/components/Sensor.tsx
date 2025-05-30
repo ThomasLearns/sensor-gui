@@ -6,6 +6,7 @@ import {
   createRenderEffect,
   createSignal,
   JSX,
+  onMount,
   Show,
 } from 'solid-js'
 import { SensorData } from '../types/SensorData'
@@ -39,22 +40,29 @@ export const Sensor: Component<{
 
   // when the indicator is clicked, upon up a sidebar
   // to edit the sensor's data
-  function onClick(event: MouseEvent) {
+  function onClick(event?: MouseEvent) {
     if (usingSidebar() === true) {
       // close sidebar if already open
-      sidebar.setSidebar(() => () => <></>)
+      setUsingSidebar(false)
+      sidebar.setSidebar(() => <></>)
       return
     }
 
     // prepare and open sidebar
-    sidebar.setSidebar(() => () => (
-      <SensorContext.Provider value={sensor}>
-        <SensorEditor setSensor={props.setSensor} />
-      </SensorContext.Provider>
-    ))
+    setUsingSidebar(true)
+    sidebar.setSidebar(
+      () => (
+        <SensorContext.Provider value={sensor}>
+          <SensorEditor setSensor={props.setSensor} />
+        </SensorContext.Provider>
+      ),
+      () => {
+        setUsingSidebar(false)
+      }
+    )
 
     // this click is handled. prevent it from propogating
-    event.stopPropagation()
+    event?.stopPropagation()
   }
 
   // keep the sensor in the cage if the cage changes size
@@ -69,6 +77,8 @@ export const Sensor: Component<{
       props.setSensor('yFeet', cage.width)
     }
   })
+
+  // onMount(onClick)
 
   return (
     <>

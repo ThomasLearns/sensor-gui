@@ -40,6 +40,16 @@ export const App: Component<Record<string, never>> = () => {
     )
   )
 
+  let cleanupSidebar: () => unknown = () => {}
+  function setSidebarContent(
+    newComponent?: Component,
+    cleanup?: () => unknown
+  ) {
+    cleanupSidebar()
+    setSidebar(() => newComponent ?? (() => <></>))
+    cleanupSidebar = cleanup ?? (() => {})
+  }
+
   // the content of the sidebar
   const [sidebar, setSidebar] = createSignal<Component>(() => <></>)
 
@@ -65,7 +75,7 @@ export const App: Component<Record<string, never>> = () => {
 
   return (
     <>
-      <SidebarContext.Provider value={{ setSidebar }}>
+      <SidebarContext.Provider value={{ setSidebar: setSidebarContent }}>
         <SensorsContext.Provider
           value={{
             sensors,

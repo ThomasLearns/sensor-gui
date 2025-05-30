@@ -21,12 +21,15 @@ export const CageSettingsButton: Component<{
   function toggleCageSettingsMenu(event: MouseEvent) {
     if (showSettings()) {
       // close the sidebar
-      sidebar.setSidebar(() => () => <></>)
+      setShowSettings(false)
+      sidebar.setSidebar(() => <></>)
     } else {
       // open the sidebar
-      sidebar.setSidebar(() => () => (
-        <CageSettingsEditor setCage={props.setCage} />
-      ))
+      setShowSettings(true)
+      sidebar.setSidebar(
+        () => <CageSettingsEditor setCage={props.setCage} />,
+        () => setShowSettings(false)
+      )
     }
     event.stopPropagation()
   }
