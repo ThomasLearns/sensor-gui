@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, For } from 'solid-js'
+import { Component, createMemo, For } from 'solid-js'
 import { Sensor } from './Sensor'
 import { createStore } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext'
@@ -8,6 +8,18 @@ import { SensorsContext } from '../contexts/SensorsContext'
 // manage the display of each sensor and their pings
 export const Sensors: Component<{}> = () => {
   const sensors = useContextOrThrow(SensorsContext)
+
+  // when a ping is received, have sensors of the right type and id
+  // display it
+  window.electronAPI.onPingReceived((ping) => {
+    console.log(`${Date.now()}: ping received`)
+    sensors.sensors
+      .filter(
+        (sensor) =>
+          sensor.type === ping.type && sensor.routNumber === ping.sensorId
+      )
+      .forEach((sensor) => sensor.getPingHandler()?.(ping.distance))
+  })
 
   return (
     <>

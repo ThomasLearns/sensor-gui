@@ -31,7 +31,7 @@ export const Beam: Component<{}> = () => {
     setTimeout(test, 2000)
     // console.log(sensor.data.getPingHandler)
   }
-  test()
+  // test()
 
   return (
     <>

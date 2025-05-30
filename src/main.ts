@@ -1,11 +1,14 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
 import started from 'electron-squirrel-startup'
+import { Ping } from './types/Pings'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit()
 }
+
+let sendPingToRenderer: undefined | ((ping: Ping) => void)
 
 const createWindow = () => {
   // Create the browser window.
@@ -29,7 +32,21 @@ const createWindow = () => {
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     )
   }
+
+  sendPingToRenderer = (ping: Ping) =>
+    mainWindow.webContents.send('ping-received', ping)
 }
+
+const test = () => {
+  sendPingToRenderer?.({
+    distance: Math.random() * 400,
+    sensorId: 12,
+    type: 'ultrasonic',
+  })
+  console.log(`${Date.now()}: sent ping (${sendPingToRenderer !== undefined})`)
+  setTimeout(test, 500)
+}
+test()
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
