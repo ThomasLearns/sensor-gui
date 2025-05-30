@@ -19,7 +19,7 @@ export const CageSettingsEditor: Component<{
   return (
     <>
       <div
-        class="flex h-full flex-col select-auto w-[15rem]"
+        class="flex h-min flex-col select-auto w-[15rem]"
         onClick={(event) => event.stopPropagation()}
       >
         {/* length */}

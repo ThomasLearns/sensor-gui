@@ -87,7 +87,7 @@ export const App: Component<Record<string, never>> = () => {
               {/* unhandled clicks in this dev will close the sidebar */}
               <div
                 class="size-full"
-                onClick={() => setSidebar(() => () => <></>)}
+                onClick={() => setSidebarContent()}
               >
                 <div class="flex flex-col size-full">
                   <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
