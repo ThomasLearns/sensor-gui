@@ -80,7 +80,7 @@ export const App: Component<Record<string, never>> = () => {
               }}
             >
               <div class="flex flex-col size-full">
-                <div class="flex mx-10 mt-4 p-2 rounded-md bg-base-300">
+                <div class="flex mx-10 mt-4 p-2 rounded-md bg-base-200">
                   <CreateSensorButton />
                 </div>
                 <CageContext.Provider value={cage}>
