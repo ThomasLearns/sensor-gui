@@ -21,12 +21,12 @@ export const CageSettingsButton: Component<{
   function toggleCageSettingsMenu(event: MouseEvent) {
     if (showSettings()) {
       // close the sidebar
-      setShowSettings(false)
-      sidebar.clearSidebar?.()
+      sidebar.setSidebar(() => () => <></>)
     } else {
       // open the sidebar
-      sidebar.clearSidebar?.(() => setShowSettings(false))
-      setShowSettings(true)
+      sidebar.setSidebar(() => () => (
+        <CageSettingsEditor setCage={props.setCage} />
+      ))
     }
     event.stopPropagation()
   }
@@ -44,14 +44,6 @@ export const CageSettingsButton: Component<{
           <VsSettingsGear size="20" />
         </button>
       </div>
-
-      <Show when={showSettings() && sidebar.mount}>
-        {(getMount) => (
-          <Portal mount={getMount()}>
-            <CageSettingsEditor setCage={props.setCage} />
-          </Portal>
-        )}
-      </Show>
     </>
   )
 }

@@ -42,13 +42,16 @@ export const Sensor: Component<{
   function onClick(event: MouseEvent) {
     if (usingSidebar() === true) {
       // close sidebar if already open
-      sidebar.clearSidebar?.()
+      sidebar.setSidebar(() => () => <></>)
       return
     }
 
     // prepare and open sidebar
-    sidebar.clearSidebar?.(() => setUsingSidebar(false))
-    setUsingSidebar(true)
+    sidebar.setSidebar(() => () => (
+      <SensorContext.Provider value={sensor}>
+        <SensorEditor setSensor={props.setSensor} />
+      </SensorContext.Provider>
+    ))
 
     // this click is handled. prevent it from propogating
     event.stopPropagation()
@@ -94,13 +97,7 @@ export const Sensor: Component<{
         </text>
         {/* circle around label */}
       </g>
-      <Show when={usingSidebar() === true && sidebar.mount}>
-        {(mountRef) => (
-          <Portal mount={mountRef()}>
-            <SensorEditor setSensor={props.setSensor} />
-          </Portal>
-        )}
-      </Show>
+
       <sensor.data.renderer />
     </>
   )

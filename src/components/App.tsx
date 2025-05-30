@@ -40,10 +40,8 @@ export const App: Component<Record<string, never>> = () => {
     )
   )
 
-  const [sidebar, setSidebar] = createStore<SidebarData>({
-    clearSidebar: undefined,
-    mount: undefined,
-  })
+  // the content of the sidebar
+  const [sidebar, setSidebar] = createSignal<Component>(() => <></>)
 
   // for testing only
   const [pingHandler, setPingHandler] = createSignal<
@@ -67,33 +65,35 @@ export const App: Component<Record<string, never>> = () => {
 
   return (
     <>
-      <div class="w-screen h-screen flex bg-base-100">
-        {/* unhandled clicks in this dev will close the sidebar */}
-        <div
-          class="size-full"
-          onClick={() => sidebar.clearSidebar?.()}
+      <SidebarContext.Provider value={{ setSidebar }}>
+        <SensorsContext.Provider
+          value={{
+            sensors,
+            setSensors,
+          }}
         >
-          <SidebarContext.Provider value={sidebar}>
-            <SensorsContext.Provider
-              value={{
-                sensors,
-                setSensors,
-              }}
-            >
-              <div class="flex flex-col size-full">
-                <CageContext.Provider value={cage}>
+          <CageContext.Provider value={cage}>
+            <div class="w-screen h-screen flex bg-base-100">
+              {/* unhandled clicks in this dev will close the sidebar */}
+              <div
+                class="size-full"
+                onClick={() => setSidebar(() => () => <></>)}
+              >
+                <div class="flex flex-col size-full">
                   <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
                     <CreateSensorButton />
                     <CageSettingsButton setCage={setCage} />
                   </div>
                   <Grid />
-                </CageContext.Provider>
+                </div>
               </div>
-            </SensorsContext.Provider>
-          </SidebarContext.Provider>
-        </div>
-        <Sidebar setSidebarContext={setSidebar} />
-      </div>
+              <Sidebar>
+                <>{sidebar()}</>
+              </Sidebar>
+            </div>
+          </CageContext.Provider>
+        </SensorsContext.Provider>
+      </SidebarContext.Provider>
     </>
   )
 }
