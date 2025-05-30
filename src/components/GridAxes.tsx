@@ -1,7 +1,16 @@
-import { axisBottom, axisLeft, axisRight, axisTop, select, Selection } from 'd3'
+import {
+  axisBottom,
+  axisLeft,
+  axisRight,
+  axisTop,
+  format,
+  select,
+  Selection,
+} from 'd3'
 import { Component, createEffect } from 'solid-js'
 import { GridContext } from '../contexts/GridContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
+import { CageContext } from '../contexts/CageContext'
 
 // the maximum "padding" between the axes and the grid.
 // the actual padding is driven as well by the axis width allocated
@@ -16,6 +25,7 @@ export const GridAxes: Component<{
     GridContext,
     'Could not get grid context information'
   )
+  const cage = useContextOrThrow(CageContext)
 
   // we need a reference to each axis element so we can have d3 set them up
   let topAxisRef: SVGGElement | undefined
@@ -47,10 +57,41 @@ export const GridAxes: Component<{
     )
       return
 
-    colorAxis(select(topAxisRef).call(axisTop(gridContext.getXScale())))
-    colorAxis(select(bottomAxisRef).call(axisBottom(gridContext.getXScale())))
-    colorAxis(select(leftAxisRef).call(axisLeft(gridContext.getYScale())))
-    colorAxis(select(rightAxisRef).call(axisRight(gridContext.getYScale())))
+    const tickValuesX = new Array(Math.floor(cage.length) + 1)
+      .fill(0)
+      .map((_, index) => index)
+    const tickValuesY = new Array(Math.floor(cage.width) + 1)
+      .fill(0)
+      .map((_, index) => index)
+    console.log(tickValuesX)
+    colorAxis(
+      select(topAxisRef).call(
+        axisTop(gridContext.getXScale())
+          .tickValues(tickValuesX)
+          .tickFormat(format('.0f'))
+      )
+    )
+    colorAxis(
+      select(bottomAxisRef).call(
+        axisBottom(gridContext.getXScale())
+          .tickValues(tickValuesX)
+          .tickFormat(format('.0f'))
+      )
+    )
+    colorAxis(
+      select(leftAxisRef).call(
+        axisLeft(gridContext.getYScale())
+          .tickValues(tickValuesY)
+          .tickFormat(format('.0f'))
+      )
+    )
+    colorAxis(
+      select(rightAxisRef).call(
+        axisRight(gridContext.getYScale())
+          .tickValues(tickValuesY)
+          .tickFormat(format('.0f'))
+      )
+    )
   })
   return (
     <>

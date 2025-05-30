@@ -38,7 +38,6 @@ export const BeamPings: Component<{
   // runs whenever a ping is received
   sensor.data.setPingHandler(() => (centimeters: number) => {
     runWithOwner(owner, () => {
-      console.log(`${Date.now()}: handling ping`)
       // from the centimeters, get the pixels of the length of the xy
       // distance (dropping z)
       const meters = centimeters / 100

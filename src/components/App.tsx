@@ -8,6 +8,7 @@ import { SensorData } from '../types/SensorData'
 import { CreateSensorButton } from './CreateSensorButton'
 import { SensorsContext } from '../contexts/SensorsContext'
 import { UltrasonicRenderer } from './UltrasonicRenderer'
+import { CageSettingsButton } from './CageSettingsButton'
 
 // this is the top level component of the renderer. It is inserted into the root element
 // (a div inside <body>)
@@ -16,8 +17,8 @@ export const App: Component<Record<string, never>> = () => {
   // in the future, this may not be a static value, but set in a
   // configuration menu
   const [cage, setCage] = createStore<CageData>({
-    width: 30,
-    height: 15,
+    length: 30,
+    width: 15,
     labels: [
       ['C', 'F', 'I'],
       ['B', 'E', 'H'],
@@ -80,10 +81,11 @@ export const App: Component<Record<string, never>> = () => {
               }}
             >
               <div class="flex flex-col size-full">
-                <div class="flex mx-10 mt-4 p-2 rounded-md bg-base-200">
-                  <CreateSensorButton />
-                </div>
                 <CageContext.Provider value={cage}>
+                  <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
+                    <CreateSensorButton />
+                    <CageSettingsButton setCage={setCage} />
+                  </div>
                   <Grid />
                 </CageContext.Provider>
               </div>

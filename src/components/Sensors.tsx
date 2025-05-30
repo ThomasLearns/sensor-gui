@@ -12,7 +12,6 @@ export const Sensors: Component<{}> = () => {
   // when a ping is received, have sensors of the right type and id
   // display it
   window.electronAPI.onPingReceived((ping) => {
-    console.log(`${Date.now()}: ping received`)
     sensors.sensors
       .filter(
         (sensor) =>

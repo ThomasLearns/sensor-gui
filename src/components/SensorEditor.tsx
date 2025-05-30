@@ -73,7 +73,7 @@ export const SensorEditor: Component<{
               </For>
             </select>
           </label>
-          <p class="validator-hint mt-0">Must be between 0 and {cage.width}</p>
+          <p class="validator-hint mt-0">Must be between 0 and {cage.length}</p>
         </div>
 
         {/* X position */}
@@ -86,7 +86,7 @@ export const SensorEditor: Component<{
               class="text-right"
               placeholder="0"
               min="0"
-              max={cage.width}
+              max={cage.length}
               onInput={(event) =>
                 sensors.setSensors(
                   sensor.index(),
@@ -98,7 +98,7 @@ export const SensorEditor: Component<{
             />
             <span class="label">feet</span>
           </label>
-          <p class="validator-hint mt-0">Must be between 0 and {cage.width}</p>
+          <p class="validator-hint mt-0">Must be between 0 and {cage.length}</p>
         </div>
 
         {/* Y position */}
@@ -111,7 +111,7 @@ export const SensorEditor: Component<{
               class="text-right"
               min="0"
               placeholder="0"
-              max={cage.height}
+              max={cage.width}
               onInput={(event) =>
                 sensors.setSensors(
                   sensor.index(),
@@ -123,7 +123,7 @@ export const SensorEditor: Component<{
             />
             <span class="label">feet</span>
           </label>
-          <p class="validator-hint mt-0">Must be between 0 and {cage.width}</p>
+          <p class="validator-hint mt-0">Must be between 0 and {cage.length}</p>
         </div>
 
         {/* horizontal angle */}
@@ -175,17 +175,20 @@ export const SensorEditor: Component<{
         </div>
 
         {/* delete button */}
-        <div
-          class="tooltip tooltip-error size-min tooltip-right"
-          data-tip="Delete Sensor"
-        >
-          <button
-            class="btn btn-sm btn-primary btn-square btn-outline"
-            onClick={() => deleteConfirmRef?.showModal()}
+        <div class="flex flex-col items-center">
+          <div
+            class="tooltip tooltip-error size-min tooltip-bottom"
+            data-tip="Delete Sensor"
           >
-            <VsTrash size="20" />
-          </button>
+            <button
+              class="btn btn-sm btn-primary btn-square btn-outline"
+              onClick={() => deleteConfirmRef?.showModal()}
+            >
+              <VsTrash size="20" />
+            </button>
+          </div>
         </div>
+
         {/* delete confirmation */}
         <dialog
           ref={deleteConfirmRef}

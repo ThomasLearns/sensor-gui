@@ -3,6 +3,7 @@ import { GridContext } from '../contexts/GridContext'
 import { SensorContext } from '../contexts/SensorContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { CageContext } from '../contexts/CageContext'
+import { createStore } from 'solid-js/store'
 
 // create a clippath outlining the edges of a beam and the edge of the cage
 export const BeamEdgeClipPath: Component<{
@@ -20,15 +21,15 @@ export const BeamEdgeClipPath: Component<{
   const getCorners = createMemo(() => {
     const normalCorners = [
       { x: 0, y: 0, distance: 0 },
-      { x: 0, y: cage.height, distance: cage.height },
-      { x: cage.width, y: cage.height, distance: cage.height + cage.width },
-      { x: cage.width, y: 0, distance: 2 * cage.height + cage.width },
+      { x: 0, y: cage.width, distance: cage.width },
+      { x: cage.length, y: cage.width, distance: cage.width + cage.length },
+      { x: cage.length, y: 0, distance: 2 * cage.width + cage.length },
     ]
     // append to the list a 2nd lap before returning
     return normalCorners.concat(
       normalCorners.map((corner) => ({
         ...corner,
-        distance: corner.distance + 2 * cage.height + 2 * cage.width,
+        distance: corner.distance + 2 * cage.width + 2 * cage.length,
       }))
     )
   })
@@ -40,7 +41,7 @@ export const BeamEdgeClipPath: Component<{
   // corner following the edges clockwise
   function getPerimiterDistance(x: number, y: number) {
     // ensure the point is on an edge
-    if (x !== 0 && x !== cage.width && y !== 0 && y !== cage.height)
+    if (x !== 0 && x !== cage.length && y !== 0 && y !== cage.width)
       throw new Error(
         `Cannot get perimiter distance of point not on edge: (${x},${y})`
       )
@@ -49,11 +50,11 @@ export const BeamEdgeClipPath: Component<{
     // the perimeter distance between the bottom left and it
     return x === 0
       ? y
-      : y === cage.height
-      ? cage.height + x
-      : x === cage.width
-      ? cage.height + cage.width + (cage.height - y)
-      : 2 * cage.height + cage.width + (cage.width - x)
+      : y === cage.width
+      ? cage.width + x
+      : x === cage.length
+      ? cage.width + cage.length + (cage.width - y)
+      : 2 * cage.width + cage.length + (cage.length - x)
   }
 
   // given a point (feet) inside the cage and an angle (radians), return the
@@ -62,7 +63,7 @@ export const BeamEdgeClipPath: Component<{
     x: number,
     y: number,
     angle: number
-  ): { x: number; y: number } {
+  ): { x: number; y: number } | null {
     // get the components of the angle
     const xComponent = Math.cos(angle)
     const yComponent = Math.sin(angle)
@@ -72,40 +73,40 @@ export const BeamEdgeClipPath: Component<{
     // the input point
     if (
       (x === 0 && xComponent < 0) ||
-      (x === cage.width && xComponent > 0) ||
+      (x === cage.length && xComponent > 0) ||
       (y === 0 && yComponent < 0) ||
-      (y === cage.height && yComponent > 0)
+      (y === cage.width && yComponent > 0)
     )
       return { x, y }
 
     // for each edge, check to see if the angle would have a line hit it
     if (x > 0 && xComponent < 0) {
       const yOnLeftBorder = y + yComponent * (x / Math.abs(xComponent))
-      if (yOnLeftBorder <= cage.height && yOnLeftBorder >= 0)
+      if (yOnLeftBorder <= cage.width && yOnLeftBorder >= 0)
         return { x: 0, y: yOnLeftBorder }
     }
 
-    if (x < cage.width && xComponent > 0) {
+    if (x < cage.length && xComponent > 0) {
       const yOnRightBorder =
-        y + yComponent * ((cage.width - x) / Math.abs(xComponent))
-      if (yOnRightBorder <= cage.height && yOnRightBorder >= 0)
-        return { x: cage.width, y: yOnRightBorder }
+        y + yComponent * ((cage.length - x) / Math.abs(xComponent))
+      if (yOnRightBorder <= cage.width && yOnRightBorder >= 0)
+        return { x: cage.length, y: yOnRightBorder }
     }
 
     if (y > 0 && yComponent < 0) {
       const xOnBottomBorder = x + xComponent * (y / Math.abs(yComponent))
-      if (xOnBottomBorder <= cage.width && xOnBottomBorder >= 0)
+      if (xOnBottomBorder <= cage.length && xOnBottomBorder >= 0)
         return { x: xOnBottomBorder, y: 0 }
     }
 
-    if (y < cage.height && yComponent > 0) {
+    if (y < cage.width && yComponent > 0) {
       const xOnTopBorder =
-        x + xComponent * ((cage.height - y) / Math.abs(yComponent))
-      if (xOnTopBorder <= cage.width && xOnTopBorder >= 0)
-        return { x: xOnTopBorder, y: cage.height }
+        x + xComponent * ((cage.width - y) / Math.abs(yComponent))
+      if (xOnTopBorder <= cage.length && xOnTopBorder >= 0)
+        return { x: xOnTopBorder, y: cage.width }
     }
 
-    throw new Error(`Could not trace sensor beam to edge of cage`)
+    return null
   }
 
   // the "points" string for the polygon representing the sensor's beam
@@ -141,6 +142,9 @@ export const BeamEdgeClipPath: Component<{
       rightAngle
     )
 
+    // sensor outside of cage, stop tracking points
+    if (leftEdgeHit === null || rightEdgeHit === null) return ''
+
     // add the point where the left beam edge hits the cage edge to our points
     points += ` ${grid.getXScale()(leftEdgeHit.x)},${grid.getYScale()(
       leftEdgeHit.y
@@ -162,7 +166,7 @@ export const BeamEdgeClipPath: Component<{
     // left. If this isn't the case, have the right intersection "lap" the left by
     // moving it a full cycle around the perimeter
     if (leftPerimiterDistance > rightPerimiterDistance) {
-      rightPerimiterDistance += 2 * cage.width + 2 * cage.height
+      rightPerimiterDistance += 2 * cage.length + 2 * cage.width
     }
 
     getCorners()

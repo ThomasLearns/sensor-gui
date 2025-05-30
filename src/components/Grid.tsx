@@ -35,19 +35,22 @@ export const Grid: Component<{}> = () => {
     // we need to compare the "aspect ratio" of both the cage and the screen space allotted
     // to us so we can determine which border of the allotted space the grid will follow
     // and which will have a gap
-    const pixelWidthToHeightRatio = allottedPixels.x / allottedPixels.y
-    const feetWidthToHeightRatio = cage.width / cage.height
+    const pixelWidthToHeightRatio =
+      (allottedPixels.x - 2 * axisWidth) / (allottedPixels.y - 2 * axisWidth)
+    const feetWidthToHeightRatio = cage.length / cage.width
 
     // calculate the pixels we give per foot based on which dimension contstrains us the most
     const pixelPerFoot =
       pixelWidthToHeightRatio > feetWidthToHeightRatio
-        ? allottedPixels.y / cage.height
-        : allottedPixels.x / cage.width
+        ? (allottedPixels.y - 2 * axisWidth) / cage.width
+        : (allottedPixels.x - 2 * axisWidth) / cage.length
+
+    console.log(`pixels per foot: ${pixelPerFoot}`)
 
     // calculate a grid size that has a 1:1 ratio and uses as much allotted space as possible
     return {
-      x: cage.width * pixelPerFoot - 2 * axisWidth,
-      y: cage.height * pixelPerFoot - 2 * axisWidth,
+      x: cage.length * pixelPerFoot,
+      y: cage.width * pixelPerFoot,
     }
   })
 
@@ -84,11 +87,11 @@ export const Grid: Component<{}> = () => {
 
   // create a scale to convert a feet value to a pixel position in the x direction
   const getXScale = createMemo(() =>
-    scaleLinear([0, cage.width], [axisWidth, getGridSize().x + axisWidth])
+    scaleLinear([0, cage.length], [axisWidth, getGridSize().x + axisWidth])
   )
   // create a scale to convert a feet value to a pixel position in the y direction
   const getYScale = createMemo(() =>
-    scaleLinear([0, cage.height], [getGridSize().y + axisWidth, axisWidth])
+    scaleLinear([0, cage.width], [getGridSize().y + axisWidth, axisWidth])
   )
 
   // create the store carrying the contextual grid data
@@ -105,17 +108,22 @@ export const Grid: Component<{}> = () => {
   })
   // keep the grid context information up to date
   createEffect(() => setGrid('pixelsPerFoot', getXScale()(1) - getXScale()(0)))
+  createEffect(() =>
+    console.log(
+      `0: ${getXScale()(0)} | ${cage.length}: ${getXScale()(cage.length)}`
+    )
+  )
   createEffect(() => setGrid('left', getXScale()(0)))
-  createEffect(() => setGrid('right', getXScale()(cage.width)))
-  createEffect(() => setGrid('top', getYScale()(cage.height)))
+  createEffect(() => setGrid('right', getXScale()(cage.length)))
+  createEffect(() => setGrid('top', getYScale()(cage.width)))
   createEffect(() => setGrid('bottom', getYScale()(0)))
   createEffect(() =>
-    setGrid('rowHeight', grid.bottom - getYScale()(cage.height / cage.rowCount))
+    setGrid('rowHeight', grid.bottom - getYScale()(cage.width / cage.rowCount))
   )
   createEffect(() =>
     setGrid(
       'columnWidth',
-      getXScale()(cage.width / cage.columnCount) - grid.left
+      getXScale()(cage.length / cage.columnCount) - grid.left
     )
   )
 

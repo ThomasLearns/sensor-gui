@@ -43,7 +43,6 @@ const test = () => {
     sensorId: 12,
     type: 'ultrasonic',
   })
-  console.log(`${Date.now()}: sent ping (${sendPingToRenderer !== undefined})`)
   setTimeout(test, 500)
 }
 test()

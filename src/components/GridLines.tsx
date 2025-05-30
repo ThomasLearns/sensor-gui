@@ -1,4 +1,4 @@
-import { Component, For } from 'solid-js'
+import { Component, createEffect, For } from 'solid-js'
 import { CageContext } from '../contexts/CageContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { GridContext } from '../contexts/GridContext'

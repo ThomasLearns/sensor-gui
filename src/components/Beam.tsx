@@ -22,16 +22,14 @@ export const Beam: Component<{}> = () => {
     () =>
       // distance = sqrt(x^2 + y^2)
       grid.pixelsPerFoot *
-      Math.sqrt(Math.pow(cage.width, 2) + Math.pow(cage.height, 2))
+      Math.sqrt(Math.pow(cage.length, 2) + Math.pow(cage.width, 2))
   )
 
   // ping testing. will be replaced by receiving pings from main process
   const test = () => {
     sensor.data.getPingHandler()?.(100)
     setTimeout(test, 2000)
-    // console.log(sensor.data.getPingHandler)
   }
-  // test()
 
   return (
     <>

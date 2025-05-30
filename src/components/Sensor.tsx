@@ -1,4 +1,13 @@
-import { Component, createMemo, createSignal, JSX, Show } from 'solid-js'
+import {
+  Component,
+  createComputed,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createSignal,
+  JSX,
+  Show,
+} from 'solid-js'
 import { SensorData } from '../types/SensorData'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { GridContext } from '../contexts/GridContext'
@@ -7,6 +16,7 @@ import { Portal } from 'solid-js/web'
 import { SensorEditor } from './SensorEditor'
 import { SetStoreFunction } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext'
+import { CageContext } from '../contexts/CageContext'
 
 // color of elements comprising sensor svg
 // const textColor = 'oklch(57.7% 0.245 27.325)'
@@ -17,10 +27,9 @@ export const Sensor: Component<{
 }> = (props) => {
   // we need grid contextual data to scale feet to screen pixels
   const grid = useContextOrThrow(GridContext)
-
   const sidebar = useContextOrThrow(SidebarContext)
-
   const sensor = useContextOrThrow(SensorContext)
+  const cage = useContextOrThrow(CageContext)
 
   // calculate the position (screen pixels) of the sensor
   const getX = createMemo(() => grid.getXScale()(sensor.data.xFeet))
@@ -44,6 +53,19 @@ export const Sensor: Component<{
     // this click is handled. prevent it from propogating
     event.stopPropagation()
   }
+
+  // keep the sensor in the cage if the cage changes size
+  // (also may have side effect of keeping sensor in cage
+  // if sensor moves, but this is already implemented elsewhere)
+  createComputed(() => {
+    console.log(cage.length - sensor.data.xFeet)
+    if (sensor.data.xFeet >= cage.length) {
+      props.setSensor('xFeet', cage.length)
+    }
+    if (sensor.data.yFeet >= cage.width) {
+      props.setSensor('yFeet', cage.width)
+    }
+  })
 
   return (
     <>
