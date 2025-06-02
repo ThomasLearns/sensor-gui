@@ -45,8 +45,6 @@ export const Grid: Component<{}> = () => {
         ? (allottedPixels.y - 2 * axisWidth) / cage.width
         : (allottedPixels.x - 2 * axisWidth) / cage.length
 
-    console.log(`pixels per foot: ${pixelPerFoot}`)
-
     // calculate a grid size that has a 1:1 ratio and uses as much allotted space as possible
     return {
       x: cage.length * pixelPerFoot,
@@ -108,11 +106,6 @@ export const Grid: Component<{}> = () => {
   })
   // keep the grid context information up to date
   createEffect(() => setGrid('pixelsPerFoot', getXScale()(1) - getXScale()(0)))
-  createEffect(() =>
-    console.log(
-      `0: ${getXScale()(0)} | ${cage.length}: ${getXScale()(cage.length)}`
-    )
-  )
   createEffect(() => setGrid('left', getXScale()(0)))
   createEffect(() => setGrid('right', getXScale()(cage.length)))
   createEffect(() => setGrid('top', getYScale()(cage.width)))

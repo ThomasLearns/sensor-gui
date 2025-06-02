@@ -63,7 +63,6 @@ export const GridAxes: Component<{
     const tickValuesY = new Array(Math.floor(cage.width) + 1)
       .fill(0)
       .map((_, index) => index)
-    console.log(tickValuesX)
     colorAxis(
       select(topAxisRef).call(
         axisTop(gridContext.getXScale())

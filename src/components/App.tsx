@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, on } from 'solid-js'
+import { Component, createEffect, createSignal, JSX, on } from 'solid-js'
 import { Grid } from './Grid'
 import { CageContext, CageData } from '../contexts/CageContext'
 import { createStore } from 'solid-js/store'
@@ -40,18 +40,20 @@ export const App: Component<Record<string, never>> = () => {
     )
   )
 
+  // the content of the sidebar
+  const [sidebar, setSidebar] = createSignal<JSX.Element>(<></>)
+
   let cleanupSidebar: () => unknown = () => {}
   function setSidebarContent(
-    newComponent?: Component,
+    newElement?: JSX.Element,
     cleanup?: () => unknown
   ) {
+    console.log('in sidebar setup')
+    console.log(newElement)
     cleanupSidebar()
-    setSidebar(() => newComponent ?? (() => <></>))
+    setSidebar(newElement ?? <></>)
     cleanupSidebar = cleanup ?? (() => {})
   }
-
-  // the content of the sidebar
-  const [sidebar, setSidebar] = createSignal<Component>(() => <></>)
 
   // for testing only
   const [pingHandler, setPingHandler] = createSignal<
@@ -75,14 +77,14 @@ export const App: Component<Record<string, never>> = () => {
 
   return (
     <>
-      <SidebarContext.Provider value={{ setSidebar: setSidebarContent }}>
-        <SensorsContext.Provider
-          value={{
-            sensors,
-            setSensors,
-          }}
-        >
-          <CageContext.Provider value={cage}>
+      <CageContext.Provider value={cage}>
+        <SidebarContext.Provider value={{ setSidebar: setSidebarContent }}>
+          <SensorsContext.Provider
+            value={{
+              sensors,
+              setSensors,
+            }}
+          >
             <div class="w-screen h-screen flex bg-base-100">
               {/* unhandled clicks in this dev will close the sidebar */}
               <div
@@ -101,9 +103,9 @@ export const App: Component<Record<string, never>> = () => {
                 <>{sidebar()}</>
               </Sidebar>
             </div>
-          </CageContext.Provider>
-        </SensorsContext.Provider>
-      </SidebarContext.Provider>
+          </SensorsContext.Provider>
+        </SidebarContext.Provider>
+      </CageContext.Provider>
     </>
   )
 }
