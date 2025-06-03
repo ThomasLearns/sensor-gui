@@ -35,14 +35,6 @@ export const Graph: Component<{
   )
   camera.position.set(0, 0, 0)
 
-  // cube
-  const geometry = new BoxGeometry(2, 2, 2)
-  const material = new MeshBasicMaterial({
-    color: 0xffffff,
-    wireframe: true,
-  })
-  const cube = new Mesh(geometry, material)
-  scene.add(cube)
   // renderer
   const renderer = new WebGLRenderer({ alpha: true, antialias: true })
 

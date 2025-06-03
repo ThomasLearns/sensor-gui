@@ -110,7 +110,10 @@ export const ConicalBeam: Component = () => {
   // maintain the beam brush in the scene
   onMount(() => {
     graphing.scene.add(beamBrush)
-    onCleanup(() => graphing.scene.remove(beamBrush))
+    onCleanup(() => {
+      graphing.scene.remove(beamBrush)
+      graphing.requestRender()
+    })
   })
 
   createEffect(() => {

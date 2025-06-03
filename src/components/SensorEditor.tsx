@@ -207,11 +207,11 @@ export const SensorEditor: Component<{
                       prev.toSpliced(sensor.index(), 1)
                     )
                   }
-                  class="btn mr-2"
+                  class="btn mr-2 btn-outline btn-error"
                 >
                   Yes
                 </button>
-                <button class="btn">No</button>
+                <button class="btn btn-outline">No</button>
               </form>
             </div>
           </div>

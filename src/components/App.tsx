@@ -9,6 +9,7 @@ import { CreateSensorButton } from './CreateSensorButton'
 import { SensorsContext } from '../contexts/SensorsContext'
 import { UltrasonicRenderer } from './UltrasonicRenderer'
 import { CageSettingsButton } from './CageSettingsButton'
+import { ClearSensorsButton } from './ClearSensorsButton'
 
 // this is the top level component of the renderer. It is inserted into the root element
 // (a div inside <body>)
@@ -92,6 +93,7 @@ export const App: Component<Record<string, never>> = () => {
                 <div class="flex flex-col size-full">
                   <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
                     <CreateSensorButton />
+                    <ClearSensorsButton />
                     <CageSettingsButton setCage={setCage} />
                   </div>
                   <Grid />
