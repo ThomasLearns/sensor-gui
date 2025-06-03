@@ -1,5 +1,6 @@
 import { ScaleLinear } from 'd3'
 import { Accessor, createContext } from 'solid-js'
+import { Scene } from 'three'
 
 // context information for the grid (with respect to the screen)
 export type GridData = {

@@ -1,11 +1,5 @@
-import { useContextOrThrow } from '../util/useContextOrThrow'
 import { UltrasonicData } from '../types/SensorData'
-import { SensorContext } from '../contexts/SensorContext'
-import { GridContext } from '../contexts/GridContext'
-import { CageContext } from '../contexts/CageContext'
-import { Beam } from './Beam'
-import { metersPerFoot } from '../util/mathConstants'
-import { getXYProjectedRadius } from '../util/getXYProjectedRadius'
+import { ConicalBeam } from './ConicalBeam'
 
 // render graphics used for displaying an ultrasonic sensor and its pings
 export const UltrasonicRenderer: UltrasonicData['renderer'] = () => {
@@ -13,7 +7,7 @@ export const UltrasonicRenderer: UltrasonicData['renderer'] = () => {
   return (
     <>
       {/* beam graphic */}
-      <Beam />
+      <ConicalBeam />
     </>
   )
 }

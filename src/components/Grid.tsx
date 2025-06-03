@@ -1,4 +1,10 @@
-import { Component, createEffect, createMemo, onMount } from 'solid-js'
+import {
+  Component,
+  createEffect,
+  createMemo,
+  createSignal,
+  onMount,
+} from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { scaleLinear } from 'd3'
 import { GridAxes } from './GridAxes'
@@ -8,6 +14,18 @@ import { GridLines } from './GridLines'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { GridLabels } from './GridLabels'
 import { Sensors } from './Sensors'
+import {
+  BoxGeometry,
+  Color,
+  Mesh,
+  MeshBasicMaterial,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Scene,
+  WebGLRenderer,
+} from 'three'
+import { GraphingContext, GraphingType } from '../contexts/GraphingContext'
+import { Graph } from './Graph'
 
 // handle displaying the cage grid view and everything in it
 export const Grid: Component<{}> = () => {
@@ -92,7 +110,6 @@ export const Grid: Component<{}> = () => {
     scaleLinear([0, cage.width], [getGridSize().y + axisWidth, axisWidth])
   )
 
-  // create the store carrying the contextual grid data
   const [grid, setGrid] = createStore<GridData>({
     getXScale,
     getYScale,
@@ -122,16 +139,18 @@ export const Grid: Component<{}> = () => {
 
   return (
     <div
-      class="size-full select-none"
+      class="size-full select-none relative"
       ref={gridRef}
     >
       <GridContext.Provider value={grid}>
-        <svg class="size-full text-base-content">
-          <GridAxes axisWidth={axisWidth} />
-          <GridLines />
-          <GridLabels />
-          <Sensors />
-        </svg>
+        <Graph>
+          <svg class="size-full text-base-content absolute">
+            <GridAxes axisWidth={axisWidth} />
+            <GridLines />
+            <GridLabels />
+            <Sensors />
+          </svg>
+        </Graph>
       </GridContext.Provider>
     </div>
   )
