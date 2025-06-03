@@ -58,21 +58,7 @@ export const App: Component<Record<string, never>> = () => {
   const [pingHandler, setPingHandler] = createSignal<
     undefined | ((centimeters: number) => void)
   >()
-  const [sensors, setSensors] = createStore<SensorData[]>([
-    {
-      xFeet: 5,
-      yFeet: 13,
-      horizontalAngle: 0,
-      verticalAngle: 0,
-      routNumber: 12,
-      type: 'ultrasonic',
-      renderer: UltrasonicRenderer,
-      measuringAngle: 15,
-      maxRange: 4,
-      getPingHandler: pingHandler,
-      setPingHandler,
-    },
-  ])
+  const [sensors, setSensors] = createStore<SensorData[]>([])
 
   return (
     <>
