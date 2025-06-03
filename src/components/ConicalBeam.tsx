@@ -148,43 +148,41 @@ export const ConicalBeam: Component = () => {
   )
 
   // the list of all actively displayed pings for the current sensor
-  const [pings, setPings] = createStore<number[]>([])
+  const [pinsData, setPingsData] = createStore<{
+    pings: { distance: number }[]
+  }>({
+    pings: [],
+  })
 
   sensor.data.setPingHandler(() => (centimeters: number) => {
     runWithOwner(owner, () => {
       const meters = centimeters / 100
       const feet = meters / metersPerFoot
-      // from the centimeters, get the pixels of the length of the xy
-      // distance (dropping z)
-      // const meters = centimeters / 100
-      // const feet = meters / metersPerFoot
-      // const pixels = createMemo(() => {
-      //   const projectedFeet = getXYProjectedRadius(
-      //     feet,
-      //     sensor.calculate.theta(),
-      //     sensor.calculate.phi()
-      //   )
-      //   return projectedFeet * grid.pixelsPerFoot
-      // })
-      // // save the height to be displayed to the user seperately
+
+      // save the height to be displayed to the user seperately
       setLastPingHeight(() =>
         createMemo(() => feet * Math.cos(sensor.calculate.phi()))
       )
       // create the ping to be displayed
-      setPings(pings.length, feet)
+      setPingsData('pings', pinsData.pings.length, { distance: feet })
     })
   })
 
   return (
     <>
       {/* create a ping object for each distance tracked */}
-      <For each={pings}>
+      <For each={pinsData.pings}>
         {(ping, getIndex) => (
           <>
             <ConicalBeamPing
-              distance={ping}
+              distance={ping.distance}
               coneBrush={getConeBrush()}
-              finish={() => setPings((prev) => prev.toSpliced(getIndex(), 1))}
+              finish={() =>
+                setPingsData(
+                  'pings',
+                  pinsData.pings.filter((_, index) => index !== getIndex())
+                )
+              }
             />
           </>
         )}

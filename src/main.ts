@@ -2,13 +2,19 @@ import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
 import started from 'electron-squirrel-startup'
 import { Ping } from './types/Pings'
+import { ReadlineParser, SerialPort } from 'serialport'
+import { usb } from 'usb'
+import { DeviceConnections } from './types/DevicesStatus'
+import {
+  initializeSerial,
+  SetDeviceUpdateCallback,
+  SetPingCallback,
+} from './coordinatorCommunication'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit()
 }
-
-let sendPingToRenderer: undefined | ((ping: Ping) => void)
 
 const createWindow = () => {
   // Create the browser window.
@@ -33,19 +39,13 @@ const createWindow = () => {
     )
   }
 
-  sendPingToRenderer = (ping: Ping) =>
+  SetPingCallback((ping: Ping) =>
     mainWindow.webContents.send('ping-received', ping)
+  )
+  SetDeviceUpdateCallback((deviceConnections) =>
+    mainWindow.webContents.send('update-devices', deviceConnections)
+  )
 }
-
-const test = () => {
-  sendPingToRenderer?.({
-    distance: Math.random() * 400,
-    sensorId: 12,
-    type: 'ultrasonic',
-  })
-  setTimeout(test, 500)
-}
-test()
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -68,6 +68,8 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+initializeSerial()
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

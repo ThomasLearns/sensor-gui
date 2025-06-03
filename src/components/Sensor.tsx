@@ -40,7 +40,6 @@ export const Sensor: Component<{
   // when the indicator is clicked, upon up a sidebar
   // to edit the sensor's data
   function openSensorProperties(event?: MouseEvent) {
-    console.log('clicked')
     if (usingSidebar() === true) {
       // close sidebar if already open
       setUsingSidebar(false)
@@ -50,8 +49,6 @@ export const Sensor: Component<{
 
     // prepare and open sidebar
     setUsingSidebar(true)
-    console.log('setting sidebar')
-    console.log(sidebar.setSidebar)
     // we run with owner so that we have access to contexts
     runWithOwner(owner, () => {
       sidebar.setSidebar(<SensorEditor setSensor={props.setSensor} />, () => {

@@ -73,6 +73,9 @@ export const ConicalBeamPing: Component<{
       graphing.scene.remove(pingMesh)
       pingMesh.geometry.dispose()
       pingMesh.material.dispose()
+
+      // rerender now that ping is removed
+      graphing.requestRender()
     })
   })
 
@@ -147,15 +150,15 @@ export const ConicalBeamPing: Component<{
 
     const opacity = 1 - Math.pow(progress, 2) // use the ease-in function t^2
 
-    // set the opacity
-    pingMesh.material.opacity = opacity
-    graphing.requestRender()
-
     // tell parent ping is finished if animation done
-    if (progress === 1) {
+    if (Math.abs(1 - progress) <= Number.EPSILON) {
       props.finish()
       return
     }
+
+    // set the opacity
+    pingMesh.material.opacity = opacity
+    graphing.requestRender()
 
     // continue in next frame
     requestAnimationFrame(fadeOut)

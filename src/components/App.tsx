@@ -48,8 +48,6 @@ export const App: Component<Record<string, never>> = () => {
     newElement?: JSX.Element,
     cleanup?: () => unknown
   ) {
-    console.log('in sidebar setup')
-    console.log(newElement)
     cleanupSidebar()
     setSidebar(newElement ?? <></>)
     cleanupSidebar = cleanup ?? (() => {})

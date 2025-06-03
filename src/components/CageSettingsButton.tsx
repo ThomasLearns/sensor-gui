@@ -21,7 +21,6 @@ export const CageSettingsButton: Component<{
 
   // open or close the cage settings sidebar
   function toggleCageSettingsMenu(event: MouseEvent) {
-    console.log('cage toggle')
     if (showSettings()) {
       // close the sidebar
       setShowSettings(false)
