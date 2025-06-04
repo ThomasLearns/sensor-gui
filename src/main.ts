@@ -43,8 +43,19 @@ const createWindow = () => {
     mainWindow.webContents.send('ping-received', ping)
   )
   SetDeviceUpdateCallback((deviceConnections) =>
-    mainWindow.webContents.send('update-devices', deviceConnections)
+    mainWindow.webContents.send(
+      'update-devices',
+      Object.entries(deviceConnections).reduce(
+        (devices, [path, details]) => ({
+          ...devices,
+          [path]: details.connected,
+        }),
+        {}
+      )
+    )
   )
+
+  initializeSerial()
 }
 
 // This method will be called when Electron has finished
@@ -68,8 +79,6 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
-initializeSerial()
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

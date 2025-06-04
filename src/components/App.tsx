@@ -10,6 +10,7 @@ import { SensorsContext } from '../contexts/SensorsContext'
 import { UltrasonicRenderer } from './UltrasonicRenderer'
 import { CageSettingsButton } from './CageSettingsButton'
 import { ClearSensorsButton } from './ClearSensorsButton'
+import { CoordinatorConnectionButton } from './CoordinatorConnectionButton'
 
 // this is the top level component of the renderer. It is inserted into the root element
 // (a div inside <body>)
@@ -81,6 +82,7 @@ export const App: Component<Record<string, never>> = () => {
                     <CreateSensorButton />
                     <ClearSensorsButton />
                     <CageSettingsButton setCage={setCage} />
+                    <CoordinatorConnectionButton />
                   </div>
                   <Grid />
                 </div>
