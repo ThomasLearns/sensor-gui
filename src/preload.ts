@@ -5,6 +5,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { Ping } from './types/Pings'
 import { DeviceConnections } from './types/DevicesStatus'
 import { ReadlineParser, SerialPort } from 'serialport'
+import { CageData } from './contexts/CageContext'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   onPingReceived: (callback: (ping: Ping) => unknown) =>
@@ -14,4 +15,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   ) => ipcRenderer.on('update-devices', (_, devices) => callback(devices)),
   trySetConnection: (path: string, connect: boolean) =>
     ipcRenderer.invoke('try-set-connection', path, connect),
+  saveCageConfiguration: (cage: CageData) =>
+    ipcRenderer.invoke('save-cage', cage),
+  loadCageConfiguration: () => ipcRenderer.invoke('load-cage'),
 })

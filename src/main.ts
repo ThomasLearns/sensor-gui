@@ -1,4 +1,10 @@
-import { app, BrowserWindow } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  IpcMainEvent,
+  IpcMessageEvent,
+} from 'electron'
 import path from 'node:path'
 import started from 'electron-squirrel-startup'
 import { Ping } from './types/Pings'
@@ -10,6 +16,9 @@ import {
   SetDeviceUpdateCallback,
   SetPingCallback,
 } from './coordinatorCommunication'
+import { CageData, parseCageData } from './contexts/CageContext'
+import { readFileSync, writeFileSync } from 'node:fs'
+import * as z from 'zod'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -56,6 +65,36 @@ const createWindow = () => {
   )
 
   initializeSerial()
+  ipcMain.handle('save-cage', async (event: IpcMainEvent, cage: CageData) => {
+    try {
+      writeFileSync(
+        path.join(app.getPath('appData'), 'god-sensor-cage-config.json'),
+        JSON.stringify(cage),
+        {
+          encoding: 'utf8',
+        }
+      )
+      return true
+    } catch {
+      return false
+    }
+  })
+  ipcMain.handle(
+    'load-cage',
+    async (event: IpcMainEvent): Promise<CageData | null> => {
+      try {
+        const rawData = readFileSync(
+          path.join(app.getPath('appData'), 'god-sensor-cage-config.json'),
+          'utf8'
+        )
+        const data = JSON.parse(rawData)
+        const cage = parseCageData.parse(data)
+        return cage
+      } catch {
+        return null
+      }
+    }
+  )
 }
 
 // This method will be called when Electron has finished

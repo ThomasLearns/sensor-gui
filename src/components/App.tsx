@@ -29,6 +29,13 @@ export const App: Component<Record<string, never>> = () => {
     rowCount: 0,
     columnCount: 0,
   })
+
+  async function loadCage() {
+    const loadedCage = await window.electronAPI.loadCageConfiguration()
+    setCage((prev) => loadedCage ?? prev)
+  }
+  loadCage()
+
   // keep derived context data up to date
   createEffect(() => setCage('rowCount', cage.labels.length))
   createEffect(() =>

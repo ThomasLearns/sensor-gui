@@ -1,10 +1,11 @@
-import { batch, Component } from 'solid-js'
-import { SetStoreFunction } from 'solid-js/store'
+import { batch, Component, createSignal, Show } from 'solid-js'
+import { SetStoreFunction, unwrap } from 'solid-js/store'
 import { CageContext, CageData } from '../contexts/CageContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { getValidNumberInput } from '../util/getValidNumberInput'
 import { LabelEditor } from './LabelEditor'
-import { VsEdit } from 'solid-icons/vs'
+import { VsEdit, VsSave } from 'solid-icons/vs'
+import { IoDownload } from 'solid-icons/io'
 
 // settings sidebar menu for cage related parameters
 export const CageSettingsEditor: Component<{
@@ -12,6 +13,11 @@ export const CageSettingsEditor: Component<{
 }> = (props) => {
   // get contextual data
   const cage = useContextOrThrow(CageContext)
+
+  const [getSaving, setSaving] = createSignal(false)
+  const [getSaveError, setSaveError] = createSignal(false)
+  const [getLoading, setLoading] = createSignal(false)
+  const [getLoadError, setLoadError] = createSignal(false)
 
   // used to open and close label editor modal
   let labelEditorRef: undefined | HTMLDialogElement
@@ -150,25 +156,89 @@ export const CageSettingsEditor: Component<{
         </div>
 
         {/* label editing button */}
-        <div class="flex flex-col items-center">
-          <div
-            class="tooltip tooltip-neutral size-min tooltip-bottom"
-            data-tip="Edit Labels"
-          >
-            <button
-              class="btn btn-sm btn-primary btn-square btn-outline self-center"
-              onClick={() => labelEditorRef?.showModal()}
-            >
-              <VsEdit size="20" />
-            </button>
-          </div>
-        </div>
+        <button
+          class="btn btn-sm btn-primary btn-outline self-center whitespace-nowrap text-nowrap"
+          onClick={() => labelEditorRef?.showModal()}
+        >
+          <span class="m-2">Edit Labels</span>
+        </button>
 
         {/* label editor */}
         <LabelEditor
           ref={labelEditorRef}
           setLabels={(newLabels) => props.setCage('labels', newLabels)}
         />
+
+        <div class="flex space-x-2 mt-4">
+          {/* save cage */}
+          <div
+            class="tooltip tooltip-right overflow-visible"
+            classList={{
+              'tooltip-error': getSaveError(),
+            }}
+            data-tip={getSaveError() ? 'Save Error' : 'Save Cage Configuration'}
+          >
+            <button
+              class="btn btn-outline btn-square"
+              classList={{
+                'btn-error': getSaveError(),
+                'btn-secondary': !getSaveError(),
+              }}
+              disabled={getLoading() || getSaving()}
+              onClick={async () => {
+                setSaving(true)
+                setSaveError(
+                  !(await window.electronAPI.saveCageConfiguration(
+                    structuredClone(unwrap(cage))
+                  ))
+                )
+                setSaving(false)
+              }}
+            >
+              <Show
+                when={!getSaving()}
+                fallback={<span class="loading loading-spinner loading-sm" />}
+              >
+                <VsSave size="20" />
+              </Show>
+            </button>
+          </div>
+
+          {/* load cage */}
+          <div
+            class="tooltip tooltip-bottom overflow-visible"
+            data-tip={getLoadError() ? 'Load Error' : 'Load Cage Configuration'}
+          >
+            <button
+              class="btn btn-outline btn-square"
+              classList={{
+                'btn-error': getLoadError(),
+                'btn-secondary': !getLoadError(),
+              }}
+              disabled={getSaving() || getLoading()}
+              onClick={async () => {
+                setLoading(true)
+                const loadedCage =
+                  await window.electronAPI.loadCageConfiguration()
+                if (loadedCage === null) {
+                  setLoadError(true)
+                } else {
+                  setLoadError(false)
+                  props.setCage(loadedCage)
+                }
+                setLoading(false)
+              }}
+            >
+              <Show
+                when={!getLoading()}
+                fallback={<span class="loading loading-spinner loading-sm" />}
+              >
+                <IoDownload size="20" />
+              </Show>
+            </button>
+          </div>
+          <div class="flex-1" />
+        </div>
       </div>
     </>
   )

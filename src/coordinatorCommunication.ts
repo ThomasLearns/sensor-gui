@@ -87,6 +87,7 @@ function establishConnection(port: SerialPort) {
 // when an open port disconnects, handle it
 function handlePortDisconnect(port: SerialPort) {
   const handleDisconnect = () => {
+    delete deviceConnections[port.path]
     // remove the connection completely, and
     // then reevaluate connected devices (in case
     // reconnection is possible and to update renderer)

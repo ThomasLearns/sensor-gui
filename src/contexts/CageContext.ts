@@ -1,4 +1,5 @@
 import { createContext } from 'solid-js'
+import * as z from 'zod'
 
 // context information for the cage configuration.
 export type CageData = {
@@ -10,5 +11,13 @@ export type CageData = {
   rowCount: number // derived from labels
   columnCount: number // derived from labels
 }
+
+export const parseCageData = z.object({
+  length: z.number(),
+  width: z.number(),
+  labels: z.array(z.array(z.string())),
+  rowCount: z.number(),
+  columnCount: z.number(),
+})
 
 export const CageContext = createContext<CageData>()
