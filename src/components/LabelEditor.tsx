@@ -28,15 +28,15 @@ export const LabelEditor: Component<{
       >
         <div class="modal-box">
           <div
-            class={`grid mb-10 max-h-[50vh] max-w-[50vw] min-w-fit mx-auto`}
+            class={`grid mb-10 max-h-[50vh] w-fit mx-auto overflow-auto`}
             style={{
               'grid-template-columns': `repeat(${cage.columnCount}, minmax(0, 1fr))`,
             }}
           >
             <For each={newLabels.flatMap((row) => row)}>
               {(label, getIndex) => (
-                <div class="border w-max">
-                  <label class="input input-xs">
+                <div class="border w-full">
+                  <label class="input input-xs w-10">
                     <input
                       type="text"
                       class="text-center"
