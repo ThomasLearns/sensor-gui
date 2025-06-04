@@ -4,6 +4,7 @@ import {
   createMemo,
   createSignal,
   getOwner,
+  onCleanup,
   onMount,
   runWithOwner,
 } from 'solid-js'
@@ -15,6 +16,7 @@ import { SensorEditor } from './SensorEditor'
 import { SetStoreFunction } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext'
 import { CageContext } from '../contexts/CageContext'
+import { clamp } from 'three/src/math/MathUtils.js'
 
 // color of elements comprising sensor svg
 // const textColor = 'oklch(57.7% 0.245 27.325)'
@@ -22,6 +24,8 @@ import { CageContext } from '../contexts/CageContext'
 // Visual indicator for a sensor and its pings
 export const Sensor: Component<{
   setSensor: SetStoreFunction<SensorData>
+  onDrag: (callback: (event: MouseEvent) => unknown) => () => unknown
+  onDragStop: (callback: (event: MouseEvent) => unknown) => () => unknown
 }> = (props) => {
   // we need grid contextual data to scale feet to screen pixels
   const grid = useContextOrThrow(GridContext)
@@ -40,6 +44,15 @@ export const Sensor: Component<{
   // when the indicator is clicked, upon up a sidebar
   // to edit the sensor's data
   function openSensorProperties(event?: MouseEvent) {
+    console.log('toggle sensor menu')
+    // don't toggle menu if dragging is user's goal
+    console.log(`dragging: ${getDragging()}`)
+    if (getDragging()) {
+      setDragging(false)
+      event?.stopPropagation()
+      return
+    }
+
     if (usingSidebar() === true) {
       // close sidebar if already open
       setUsingSidebar(false)
@@ -80,6 +93,45 @@ export const Sensor: Component<{
     })
   })
 
+  const [getMouseDown, setMouseDown] = createSignal(false)
+
+  createEffect(() => {
+    console.log(getMouseDown())
+  })
+
+  // drag and drop the sensor
+  function drag(event: MouseEvent) {
+    if (!getMouseDown()) return
+
+    setDragging(true)
+
+    props.setSensor('xFeet', (prev) =>
+      clamp(
+        Math.round(1e2 * (prev + event.movementX / grid.pixelsPerFoot)) / 1e2,
+        0,
+        cage.length
+      )
+    )
+    props.setSensor('yFeet', (prev) =>
+      clamp(
+        Math.round(1e2 * (prev - event.movementY / grid.pixelsPerFoot)) / 1e2,
+        0,
+        cage.width
+      )
+    )
+    console.log(`x: ${sensor.data.xFeet} y: ${sensor.data.yFeet}`)
+  }
+
+  const [getDragging, setDragging] = createSignal(false)
+
+  // subscribe to mouse events anywhere on grid
+  onCleanup(props.onDrag(drag))
+  onCleanup(
+    props.onDragStop(() => {
+      setMouseDown(false)
+    })
+  )
+
   return (
     <>
       <g class="stroke-primary fill-base-200">
@@ -91,12 +143,15 @@ export const Sensor: Component<{
           transform-origin="center"
           transform={`translate(${getX()}, ${getY()})`}
           fill-opacity="0.8"
+          onMouseDown={() => {
+            setMouseDown(true)
+            console.log('mouse down')
+          }}
         />
       </g>
-      <g class="fill-primary cursor-pointer">
+      <g class="fill-primary pointer-events-none">
         {/* sensor label */}
         <text
-          onClick={openSensorProperties}
           text-anchor="middle"
           dominant-baseline="middle"
           font-family="monospace"
