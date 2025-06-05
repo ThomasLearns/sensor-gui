@@ -36,6 +36,11 @@ export const App: Component<Record<string, never>> = () => {
   }
   loadCage()
 
+  let closeAppConfirmRef: undefined | HTMLDialogElement
+  document.addEventListener('keyup', (event) => {
+    closeAppConfirmRef?.showModal()
+  })
+
   // keep derived context data up to date
   createEffect(() => setCage('rowCount', cage.labels.length))
   createEffect(() =>
@@ -101,6 +106,28 @@ export const App: Component<Record<string, never>> = () => {
           </SensorsContext.Provider>
         </SidebarContext.Provider>
       </CageContext.Provider>
+
+      <dialog
+        ref={closeAppConfirmRef}
+        class="modal"
+      >
+        <div class="modal-box">
+          <h3 class="font-bold text-lg text-center">
+            Are you sure that you want to exit to desktop?
+          </h3>
+          <div class="modal-action justify-center">
+            <form method="dialog">
+              <button
+                onClick={() => window.electronAPI.closeApp()}
+                class="btn mr-2 btn-outline"
+              >
+                Yes
+              </button>
+              <button class="btn btn-outline">No</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </>
   )
 }

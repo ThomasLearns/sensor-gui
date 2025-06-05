@@ -11,11 +11,7 @@ import { Ping } from './types/Pings'
 import { ReadlineParser, SerialPort } from 'serialport'
 import { usb } from 'usb'
 import { DeviceConnections } from './types/DevicesStatus'
-import {
-  initializeSerial,
-  SetDeviceUpdateCallback,
-  SetPingCallback,
-} from './coordinatorCommunication'
+import { initializeSerial } from './serialCommunication/coordinatorCommunication'
 import { CageData, parseCageData } from './contexts/CageContext'
 import { readFileSync, writeFileSync } from 'node:fs'
 import * as z from 'zod'
@@ -31,9 +27,9 @@ const createWindow = () => {
     width: 800,
     height: 480,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload', 'preload.js'),
     },
-    fullscreen: false,
+    fullscreen: true,
   })
 
   // and load the index.html of the app.
@@ -43,28 +39,28 @@ const createWindow = () => {
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
   } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    )
+    mainWindow.loadFile(path.join(__dirname, `../.vite/renderer/index.html`))
   }
 
-  SetPingCallback((ping: Ping) =>
-    mainWindow.webContents.send('ping-received', ping)
-  )
-  SetDeviceUpdateCallback((deviceConnections) =>
-    mainWindow.webContents.send(
-      'update-devices',
-      Object.entries(deviceConnections).reduce(
-        (devices, [path, details]) => ({
-          ...devices,
-          [path]: details.connected,
-        }),
-        {}
-      )
-    )
-  )
+  ipcMain.on('close', () => mainWindow.close())
 
-  initializeSerial()
+  // setPingCallback((ping: Ping) =>
+  //   mainWindow.webContents.send('ping-received', ping)
+  // )
+  // setDeviceUpdateCallback((deviceConnections) =>
+  //   mainWindow.webContents.send(
+  //     'update-devices',
+  //     Object.entries(deviceConnections).reduce(
+  //       (devices, [path, details]) => ({
+  //         ...devices,
+  //         [path]: details.connected,
+  //       }),
+  //       {}
+  //     )
+  //   )
+  // )
+
+  initializeSerial(mainWindow)
   ipcMain.handle('save-cage', async (event: IpcMainEvent, cage: CageData) => {
     try {
       writeFileSync(

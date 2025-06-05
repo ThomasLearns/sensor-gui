@@ -34,6 +34,10 @@ export const CoordinatorConnectionMenu: Component<{
     operationsInProgress()[index][1](false)
   }
 
+  createEffect(() => {
+    console.log(props.devices)
+  })
+
   return (
     <>
       <div class="flex h-min flex-col select-none w-[15rem]">
@@ -43,7 +47,7 @@ export const CoordinatorConnectionMenu: Component<{
               <>
                 <li class="list-row bg-base-300 rounded-md">
                   <div
-                    class="tooltip tooltip-bottom"
+                    class="tooltip tooltip-right"
                     classList={{
                       'tooltip-error': !device.connected,
                       'tooltip-success': device.connected,

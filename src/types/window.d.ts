@@ -9,9 +9,10 @@ declare global {
       onUpdateDevices: (
         callback: (devices: { [path: string]: boolean }) => unknown
       ) => void
-      trySetConnection: (path: string, connected: boolean) => Promise<boolean>
+      trySetConnection: (path: string, connected: boolean) => Promise<void>
       saveCageConfiguration: (cage: CageData) => Promise<boolean>
       loadCageConfiguration: () => Promise<CageData | null>
+      closeApp: () => unknown
     }
   }
 }

@@ -6,7 +6,7 @@ import {
   getOwner,
   runWithOwner,
 } from 'solid-js'
-import { createStore, unwrap } from 'solid-js/store'
+import { createStore, reconcile, unwrap } from 'solid-js/store'
 import { SidebarContext } from '../contexts/SidebarContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import { CoordinatorConnectionMenu } from './CoordinatorConnectionMenu'
@@ -25,15 +25,18 @@ export const CoordinatorConnectionButton: Component = () => {
   // use this component as owner of sidebar menu content
   const owner = getOwner()
 
-  window.electronAPI.onUpdateDevices((newDeviceStatuses) =>
+  window.electronAPI.onUpdateDevices((newDeviceStatuses) => {
+    console.log(newDeviceStatuses)
     setDevicesInfo(
       'devices',
-      Object.entries(newDeviceStatuses).map(([path, connected]) => ({
-        path,
-        connected,
-      }))
+      reconcile(
+        Object.entries(newDeviceStatuses).map(([path, connected]) => ({
+          path,
+          connected,
+        }))
+      )
     )
-  )
+  })
 
   const getConnections = createMemo(() =>
     devicesInfo.devices.filter((device) => device.connected === true)

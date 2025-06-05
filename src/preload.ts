@@ -18,4 +18,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveCageConfiguration: (cage: CageData) =>
     ipcRenderer.invoke('save-cage', cage),
   loadCageConfiguration: () => ipcRenderer.invoke('load-cage'),
+  closeApp: () => ipcRenderer.send('close'),
 })
