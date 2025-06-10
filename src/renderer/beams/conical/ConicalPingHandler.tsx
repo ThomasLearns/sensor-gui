@@ -16,6 +16,7 @@ import { metersPerFoot } from '../../../util/mathConstants'
 import { ConicalBeamPing } from './ConicalBeamPing'
 import { Brush } from 'three-bvh-csg'
 import { Portal } from 'solid-js/web'
+import { clamp } from 'three/src/math/MathUtils.js'
 
 // display pings for a conical beam
 export const ConicalPingHandler: Component<{
@@ -49,12 +50,25 @@ export const ConicalPingHandler: Component<{
       setLastPingHeight(() =>
         createMemo(() => feet * Math.cos(sensor.calculate.phi()))
       )
+      // reset the ping height opacity
+      fadeStartTime = performance.now()
       // create the ping to be displayed
       setPingsData('pings', pinsData.pings.length, { distance: feet })
     })
   })
 
   createEffect(() => console.log(grid.getOnTopMount()))
+
+  const [getHeightOpacity, setHeightOpacity] = createSignal(1)
+
+  let fadeStartTime: number = performance.now()
+  function reduceHeightOpacity(now: number) {
+    const progress = clamp((now - fadeStartTime) / 500, 0, 1) // 500 milliseconds fade duration
+    setHeightOpacity(1 - Math.pow(progress, 2)) // quadratic easing for fade out
+
+    requestAnimationFrame(reduceHeightOpacity)
+  }
+  requestAnimationFrame(reduceHeightOpacity)
 
   return (
     <>
@@ -86,6 +100,7 @@ export const ConicalPingHandler: Component<{
             y={`${grid.getYScale()(sensor.data.yFeet) + 24}px`}
             text-anchor="middle"
             z-index="1000"
+            opacity={getHeightOpacity()}
           >
             {Math.round(Math.abs(getLastPingHeight()() * 10)) / 10 !== 0
               ? `${
