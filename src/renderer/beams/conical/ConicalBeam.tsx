@@ -13,12 +13,9 @@ import { metersPerFoot } from '../../../util/mathConstants'
 import { Brush, INTERSECTION } from 'three-bvh-csg'
 import { GraphingContext } from '../../contexts/GraphingContext'
 import { ConicalPingHandler } from './ConicalPingHandler'
-import {
-  borrowBrush,
-  cvgEvaluator,
-  returnSphereBrush,
-} from '../../3dRendering/beamBrush'
+import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool'
 import { beamMaterial } from '../../3dRendering/materials'
+import { csgEvaluator } from '../../3dRendering/evaluator'
 
 // display a conical beam using a sensor's properties
 export const ConicalBeam: Component = () => {
@@ -103,14 +100,14 @@ export const ConicalBeam: Component = () => {
     onCleanup(() => {
       graphing.scene.remove(beamBrush)
       graphing.requestRender()
-      returnSphereBrush(coneBrush)
-      returnSphereBrush(sphereBrush)
+      releaseBrush(coneBrush)
+      releaseBrush(sphereBrush)
     })
   })
 
   // create the beam brush by evaluating the intersection of the sphere and cone
   const getBeamBrush = createMemo(() => {
-    cvgEvaluator.evaluate(
+    csgEvaluator.evaluate(
       getSphereBrush(),
       getConeBrush().brush,
       INTERSECTION,

@@ -23,12 +23,9 @@ import { formatHex, oklch } from 'culori'
 import { SensorContext } from '../../contexts/SensorContext'
 import { metersPerFoot } from '../../../util/mathConstants'
 import { clamp } from 'three/src/math/MathUtils.js'
-import {
-  borrowBrush,
-  cvgEvaluator,
-  returnSphereBrush,
-} from '../../3dRendering/beamBrush'
+import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool'
 import { pingMaterial } from '../../3dRendering/materials'
+import { csgEvaluator } from '../../3dRendering/evaluator'
 
 const pingWidth = 0.1 // feet
 const fadeDuration = 500 // milliseconds
@@ -60,8 +57,8 @@ export const ConicalBeamPing: Component<{
       graphing.scene.remove(pingBrush)
 
       // return borrowed brushes
-      returnSphereBrush(outerSphereBrush)
-      returnSphereBrush(innerSphereBrush)
+      releaseBrush(outerSphereBrush)
+      releaseBrush(innerSphereBrush)
 
       // rerender now that ping is removed
       graphing.requestRender()
@@ -110,7 +107,7 @@ export const ConicalBeamPing: Component<{
   })
 
   const getRingBrush = createMemo(() => {
-    const ring = cvgEvaluator.evaluate(
+    const ring = csgEvaluator.evaluate(
       getOuterSphereBrush(),
       getInnerSphereBrush(),
       SUBTRACTION
@@ -143,7 +140,7 @@ export const ConicalBeamPing: Component<{
   const getRawPingBrush = createMemo(() => {
     if (pingBrush) {
       // if the brush already exists, just update it
-      cvgEvaluator.evaluate(
+      csgEvaluator.evaluate(
         getRingBrush(),
         props.coneBrush,
         INTERSECTION,
@@ -151,7 +148,7 @@ export const ConicalBeamPing: Component<{
       )
     } else {
       // if the brush doesn't exist, create it
-      pingBrush = cvgEvaluator.evaluate(
+      pingBrush = csgEvaluator.evaluate(
         getRingBrush(),
         props.coneBrush,
         INTERSECTION
