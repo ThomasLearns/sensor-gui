@@ -29,7 +29,6 @@ export function jam(typeId: number, sensorId: number) {
 
 // loop through the jam orders and send them
 function jamLoop(lastTime: number) {
-  console.log('jamming')
   const currentTime = performance.now()
   jamOrders.forEach((order) => {
     // send jam order and reduce remaining time

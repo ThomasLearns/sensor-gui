@@ -23,7 +23,6 @@ export const Sensors: Component<{}> = () => {
   })
 
   window.electronAPI.onJam((typeId, sensorId) => {
-    console.log('received jam', typeId, sensorId)
     sensors.sensors
       .filter(
         (sensor) =>

@@ -24,13 +24,8 @@ export async function periodicScan(
   })
 
   await Promise.allSettled(
-    newPorts.map(
-      (port) => connectTo(port.path, devices)
-      // .then((device) => console.log(device))
-    )
+    newPorts.map((port) => connectTo(port.path, devices))
   )
-  // console.log(devices)
-  // console.log('\n\n')
 
   callback(devices)
   setTimeout(() => periodicScan(callback, devices), scanInterval)

@@ -57,7 +57,6 @@ export const ConicalBeamPing: Component<{
 
   // generate the outer sphere centered on the sensor, with
   // a radius slightly larger than the ping distance
-  // console.log('defining getOuterSphereBrush')
   const getOuterSphereBrush = createMemo(() => {
     // scale to be slightly larger than the ping distance
     outerSphereBrush.scale.set(
