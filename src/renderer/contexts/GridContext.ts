@@ -20,6 +20,8 @@ export type GridData = {
   // derived from the scales and cage context information
   rowHeight: number
   columnWidth: number
+
+  getOnTopMount: Accessor<SVGSVGElement | undefined>
 }
 
 export const GridContext = createContext<GridData>()

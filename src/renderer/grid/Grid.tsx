@@ -83,6 +83,7 @@ export const Grid: Component<{}> = () => {
 
   // once the element is loaded, begin tracking the available screen space for the grid
   onMount(() => {
+    setOnTopMount(onTopMount)
     if (gridRef === undefined) throw new Error('Could not load grid')
     // get the available space and track it in a reactive solidjs store
     const gridStyle = window.getComputedStyle(gridRef)
@@ -110,6 +111,9 @@ export const Grid: Component<{}> = () => {
     scaleLinear([0, cage.width], [getGridSize().y + axisWidth, axisWidth])
   )
 
+  let onTopMount: SVGSVGElement | undefined
+  const [getOnTopMount, setOnTopMount] = createSignal<SVGSVGElement>()
+
   const [grid, setGrid] = createStore<GridData>({
     getXScale,
     getYScale,
@@ -120,6 +124,7 @@ export const Grid: Component<{}> = () => {
     bottom: 0,
     rowHeight: 0,
     columnWidth: 0,
+    getOnTopMount,
   })
   // keep the grid context information up to date
   createEffect(() => setGrid('pixelsPerFoot', getXScale()(1) - getXScale()(0)))
@@ -151,6 +156,10 @@ export const Grid: Component<{}> = () => {
             <Sensors />
           </svg>
         </Graph>
+        <svg
+          class="size-full text-base-content absolute pointer-events-none"
+          ref={onTopMount}
+        />
       </GridContext.Provider>
     </div>
   )

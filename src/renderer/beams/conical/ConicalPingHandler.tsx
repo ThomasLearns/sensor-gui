@@ -15,6 +15,7 @@ import { useContextOrThrow } from '../../../util/useContextOrThrow'
 import { metersPerFoot } from '../../../util/mathConstants'
 import { ConicalBeamPing } from './ConicalBeamPing'
 import { Brush } from 'three-bvh-csg'
+import { Portal } from 'solid-js/web'
 
 // display pings for a conical beam
 export const ConicalPingHandler: Component<{
@@ -53,6 +54,8 @@ export const ConicalPingHandler: Component<{
     })
   })
 
+  createEffect(() => console.log(grid.getOnTopMount()))
+
   return (
     <>
       {/* create a ping object for each distance tracked */}
@@ -73,19 +76,25 @@ export const ConicalPingHandler: Component<{
         )}
       </For>
       {/* if the height isn't 0, display the height to the user */}
-      <g class="fill-accent">
-        <text
-          x={`${grid.getXScale()(sensor.data.xFeet)}px`}
-          y={`${grid.getYScale()(sensor.data.yFeet) + 24}px`}
-          text-anchor="middle"
-        >
-          {Math.round(Math.abs(getLastPingHeight()() * 10)) / 10 !== 0
-            ? `${
-                getLastPingHeight()() > 0 ? '+' : ''
-              }${getLastPingHeight()().toFixed(1)}ft`
-            : ''}
-        </text>
-      </g>
+      <Portal
+        mount={grid.getOnTopMount()}
+        isSVG
+      >
+        <g class="fill-info">
+          <text
+            x={`${grid.getXScale()(sensor.data.xFeet)}px`}
+            y={`${grid.getYScale()(sensor.data.yFeet) + 24}px`}
+            text-anchor="middle"
+            z-index="1000"
+          >
+            {Math.round(Math.abs(getLastPingHeight()() * 10)) / 10 !== 0
+              ? `${
+                  getLastPingHeight()() > 0 ? '+' : ''
+                }${getLastPingHeight()().toFixed(1)}ft`
+              : ''}
+          </text>
+        </g>
+      </Portal>
     </>
   )
 }
