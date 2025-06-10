@@ -5,7 +5,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { Ping } from './types/Pings'
 import { DeviceConnections } from './types/DevicesStatus'
 import { ReadlineParser, SerialPort } from 'serialport'
-import { CageData } from './contexts/CageContext'
+import { CageData } from './renderer/contexts/CageContext'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   onPingReceived: (callback: (ping: Ping) => unknown) =>

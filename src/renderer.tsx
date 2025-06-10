@@ -14,7 +14,7 @@
 
 import './index.css'
 import { render } from 'solid-js/web'
-import { App } from './components/App'
+import { App } from './renderer/App'
 
 const root = document.getElementById('root')
 if (root === null) throw new Error('Could not get root')
