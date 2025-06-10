@@ -1,12 +1,25 @@
 import { Accessor, Component, Setter } from 'solid-js'
 
-// information needed to describe an ultrasonic sensor
-export type UltrasonicData = {
-  type: 'ultrasonic'
+interface SpecificSensor {
+  type: string
   renderer: Component<{}> // component used to render the sensor
+
+  // already handled by "type" field, but other components of the sensor
+  // network reference sensors by id number, so we need to keep it
+  sensorTypeId: number // unique identifier for the sensor type
+
+  getPingHandler: Accessor<undefined | ((...args: unknown[]) => void)>
+  setPingHandler: Setter<undefined | ((...args: unknown[]) => void)>
+}
+
+// information needed to describe an ultrasonic sensor
+export type UltrasonicData = SpecificSensor & {
+  type: 'ultrasonic'
   measuringAngle: number // angle of the beam in degrees
 
-  // signal for ping handling callback for this sensor
+  // unique identifier for the sensor type
+  sensorTypeId: 1
+
   getPingHandler: Accessor<undefined | ((distance: number) => void)>
   setPingHandler: Setter<undefined | ((distance: number) => void)>
 }

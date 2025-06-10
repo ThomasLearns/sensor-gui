@@ -27,6 +27,7 @@ export const CreateSensorButton: Component<{}> = () => {
       maxRange: 4,
       getPingHandler: pingHandler,
       setPingHandler,
+      sensorTypeId: 1,
     }
 
     sensors.setSensors(sensors.sensors.length, newSensor)
