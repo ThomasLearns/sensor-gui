@@ -1,17 +1,18 @@
 import { BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
-import { ReadlineParser, SerialPort } from 'serialport'
-import { handshake } from './handshake'
-import { openPort } from './openPort'
 import { connectTo } from './connectTo'
 import { periodicScan } from './periodicScan'
-import { deleteDevice } from './deleteDevice'
 import { Ping } from '../../types/Pings'
 import { Device, Devices } from '../../types/DevicesStatus'
 import { disconnectFrom } from './disconnectFrom'
 
 export let sendPing: (ping: Ping) => void
+export let sendJam: (typeId: number, sensorId: number) => void
 
 export function initializeSerial(mainWindow: BrowserWindow) {
+  sendPing = (ping: Ping) => mainWindow.webContents.send('ping-received', ping)
+  sendJam = (typeId: number, sensorId: number) =>
+    mainWindow.webContents.send('jam', typeId, sensorId)
+
   const updateDevices = (devices: { [path: string]: Device }) =>
     mainWindow.webContents.send(
       'update-devices',
@@ -23,8 +24,6 @@ export function initializeSerial(mainWindow: BrowserWindow) {
         {}
       )
     )
-
-  sendPing = (ping: Ping) => mainWindow.webContents.send('ping-received', ping)
 
   periodicScan(updateDevices, devices)
 

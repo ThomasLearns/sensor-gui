@@ -22,6 +22,21 @@ export const Sensors: Component<{}> = () => {
       .forEach((sensor) => sensor.getPingHandler()?.(ping.distance))
   })
 
+  window.electronAPI.onJam((typeId, sensorId) => {
+    console.log('received jam', typeId, sensorId)
+    sensors.sensors
+      .filter(
+        (sensor) =>
+          (typeId === 0 || sensor.sensorTypeId === typeId) &&
+          (sensorId === 0 || sensor.routNumber === sensorId)
+      )
+      .forEach((sensor) =>
+        sensor.getPingHandler()?.(
+          Math.round(Math.random() * sensor.maxRange * 100)
+        )
+      )
+  })
+
   const [eventListeners, setEventListeners] = createStore<{
     drag: ((event: MouseEvent) => unknown)[]
     dragStop: ((event: MouseEvent) => unknown)[]

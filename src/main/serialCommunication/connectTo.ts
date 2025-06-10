@@ -1,7 +1,7 @@
 import { Device } from '../../types/DevicesStatus'
 import { handshake } from './handshake'
 import { openPort } from './openPort'
-import { readPings } from './readPings'
+import { readPings } from '../pings/readPings'
 
 export async function connectTo(
   path: string,

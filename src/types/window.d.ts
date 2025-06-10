@@ -21,6 +21,8 @@ declare global {
       loadCageConfiguration: () => Promise<CageData | null>
       // close the application
       closeApp: () => unknown
+
+      onJam: (callback: (typeId: number, sensorId: number) => unknown) => void
     }
   }
 }

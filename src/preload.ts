@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('save-cage', cage),
   loadCageConfiguration: () => ipcRenderer.invoke('load-cage'),
   closeApp: () => ipcRenderer.send('close'),
+  onJam: (callback: (typeId: number, sensorId: number) => unknown) =>
+    ipcRenderer.on('jam', (_, typeId, sensorId) => callback(typeId, sensorId)),
 })
