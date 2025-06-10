@@ -18,7 +18,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload', 'preload.js'),
     },
-    fullscreen: false,
+    fullscreen: app.isPackaged, // enable fullscreen in production
   })
 
   // and load the index.html of the app.
