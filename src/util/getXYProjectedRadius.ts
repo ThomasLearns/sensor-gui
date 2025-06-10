@@ -1,6 +1,3 @@
-import { createMemo } from 'solid-js'
-import { metersPerFoot } from './mathConstants'
-
 // the projection radius finder is a function that, given a target radius
 // in meters of the sensor's beam, will find that same radius projected on the xy plane
 // (without the z component)

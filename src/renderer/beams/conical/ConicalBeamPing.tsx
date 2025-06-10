@@ -9,17 +9,7 @@ import {
 } from 'solid-js'
 import { GraphingContext } from '../../contexts/GraphingContext'
 import { useContextOrThrow } from '../../../util/useContextOrThrow'
-import {
-  BufferAttribute,
-  BufferGeometry,
-  Color,
-  FrontSide,
-  Mesh,
-  MeshBasicMaterial,
-  SphereGeometry,
-} from 'three'
-import { Brush, Evaluator, INTERSECTION, SUBTRACTION } from 'three-bvh-csg'
-import { formatHex, oklch } from 'culori'
+import { Brush, INTERSECTION, SUBTRACTION } from 'three-bvh-csg'
 import { SensorContext } from '../../contexts/SensorContext'
 import { metersPerFoot } from '../../../util/mathConstants'
 import { clamp } from 'three/src/math/MathUtils.js'

@@ -1,20 +1,9 @@
-import {
-  app,
-  BrowserWindow,
-  ipcMain,
-  IpcMainEvent,
-  IpcMessageEvent,
-} from 'electron'
+import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
 import path from 'node:path'
 import started from 'electron-squirrel-startup'
-import { Ping } from './types/Pings'
-import { ReadlineParser, SerialPort } from 'serialport'
-import { usb } from 'usb'
-import { DeviceConnections } from './types/DevicesStatus'
 import { initializeSerial } from './main/serialCommunication/initializeSerial'
 import { CageData, parseCageData } from './renderer/contexts/CageContext'
 import { readFileSync, writeFileSync } from 'node:fs'
-import * as z from 'zod'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -43,22 +32,6 @@ const createWindow = () => {
   }
 
   ipcMain.on('close', () => mainWindow.close())
-
-  // setPingCallback((ping: Ping) =>
-  //   mainWindow.webContents.send('ping-received', ping)
-  // )
-  // setDeviceUpdateCallback((deviceConnections) =>
-  //   mainWindow.webContents.send(
-  //     'update-devices',
-  //     Object.entries(deviceConnections).reduce(
-  //       (devices, [path, details]) => ({
-  //         ...devices,
-  //         [path]: details.connected,
-  //       }),
-  //       {}
-  //     )
-  //   )
-  // )
 
   initializeSerial(mainWindow)
   ipcMain.handle('save-cage', async (event: IpcMainEvent, cage: CageData) => {
