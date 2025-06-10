@@ -133,7 +133,7 @@ export const SensorEditor: Component<{
             <span class="label">Horizontal Angle:</span>
             <input
               type="number"
-              step="any"
+              step="5"
               class="text-right"
               placeholder="0"
               onInput={(event) =>
@@ -156,7 +156,7 @@ export const SensorEditor: Component<{
             <span class="label">Vertical Angle:</span>
             <input
               type="number"
-              step="any"
+              step="5"
               class="text-right"
               min="-90"
               placeholder="0"
