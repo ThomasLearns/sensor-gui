@@ -26,7 +26,6 @@ export const CoordinatorConnectionButton: Component = () => {
   const owner = getOwner()
 
   window.electronAPI.onUpdateDevices((newDeviceStatuses) => {
-    console.log(newDeviceStatuses)
     setDevicesInfo(
       'devices',
       reconcile(
@@ -43,7 +42,6 @@ export const CoordinatorConnectionButton: Component = () => {
   )
 
   function toggleMenu(event: MouseEvent) {
-    console.log(unwrap(devicesInfo.devices))
     if (showMenu()) {
       // close sidebar
       setShowMenu(false)

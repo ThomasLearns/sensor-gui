@@ -2,44 +2,28 @@ import {
   Component,
   createEffect,
   createMemo,
+  on,
   onCleanup,
   onMount,
 } from 'solid-js'
 import { useContextOrThrow } from '../util/useContextOrThrow'
-import {
-  Color,
-  ConeGeometry,
-  MeshBasicMaterial,
-  Quaternion,
-  SphereGeometry,
-  Vector3,
-} from 'three'
+import { Quaternion, Vector3 } from 'three'
 import { SensorContext } from '../contexts/SensorContext'
 import { metersPerFoot } from '../util/mathConstants'
-import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg'
+import { Brush, INTERSECTION } from 'three-bvh-csg'
 import { GraphingContext } from '../contexts/GraphingContext'
-import { formatHex, oklch } from 'culori'
 import { ConicalPingHandler } from './ConicalPingHandler'
+import {
+  beamMaterial,
+  borrowBrush,
+  cvgEvaluator,
+  returnSphereBrush,
+} from '../util/beamBrush'
 
 // display a conical beam using a sensor's properties
 export const ConicalBeam: Component = () => {
   const graphing = useContextOrThrow(GraphingContext)
   const sensor = useContextOrThrow(SensorContext)
-
-  // material to use for beam shapes
-  const beamMaterial = new MeshBasicMaterial({
-    color: new Color(
-      formatHex(
-        oklch(
-          getComputedStyle(document.documentElement)
-            .getPropertyValue('--color-secondary')
-            .trim()
-        )
-      )
-    ),
-    opacity: 0.2,
-    transparent: true,
-  })
 
   // the beam is made up of the intersection of a sphere and a cone
   // the sphere uses the sensor's max range as its radius, and the cone
@@ -47,7 +31,8 @@ export const ConicalBeam: Component = () => {
 
   // create the sphere, and maintain its position, scale, etc
   // use 1 as the base radius of the sphere so we can scale it to other radiuses easily
-  const sphereBrush = new Brush(new SphereGeometry(1), beamMaterial)
+  const sphereBrush = borrowBrush(beamMaterial, { type: 'sphere' })
+  // const sphereBrush = new Brush(new SphereGeometry(1), beamMaterial)
   const getSphereBrush = createMemo(() => {
     // set the radius by scaling the sphere up (or down)
     sphereBrush.scale.set(
@@ -64,20 +49,23 @@ export const ConicalBeam: Component = () => {
   })
 
   // create the cone, and maintain its position, scale, etc
-  let coneBrush = new Brush()
-  const getConeBrush = createMemo(() => {
-    // always create a new brush for the cone, because we cannot change the
-    // angle after setting it (and the angle is reactive)
-    coneBrush = new Brush(
-      new ConeGeometry(
-        Math.tan((sensor.data.measuringAngle * Math.PI) / 180 / 2),
-        1 // use 1 as the starting cone height so its easy to scale
-      ),
-      beamMaterial
-    )
+  let coneBrush: Brush
 
-    // move the origin from the center of the cone to the tip of the cone
-    coneBrush.geometry.translate(0, -0.5, 0)
+  // get a brush for the cone, borrowing it from the pool
+  // this is a seperate memo because we want to run this as little as possible
+  const borrowConeBrush = createMemo(() => {
+    return borrowBrush(beamMaterial, {
+      type: 'cone',
+      // use the measuring angle to determine the radius of the cone
+      radius: Math.tan((sensor.data.measuringAngle * Math.PI) / 180 / 2),
+    })
+  })
+
+  // get a brush for the cone (angle), and update it with the sensor's properties
+  const getConeBrush = createMemo(() => {
+    // get a new brush only if the angle has changed
+    coneBrush = borrowConeBrush()
+
     // scale the cone to the maximum range of the sensor
     coneBrush.scale.set(
       sensor.data.maxRange / metersPerFoot,
@@ -100,40 +88,53 @@ export const ConicalBeam: Component = () => {
 
     // update and return the brush
     coneBrush.updateMatrixWorld()
-    return coneBrush
+
+    // return inside a wrapper object to force dependents to
+    // see the change as a new reference
+    return { brush: coneBrush }
   })
 
   // the beam is formed through intersecting the sphere (range) and cone (angle)
-  const evaluator = new Evaluator()
   const beamBrush = new Brush()
 
   // maintain the beam brush in the scene
   onMount(() => {
-    graphing.scene.add(beamBrush)
+    graphing.scene.add(getBeamBrush().brush)
     onCleanup(() => {
       graphing.scene.remove(beamBrush)
       graphing.requestRender()
+      returnSphereBrush(coneBrush)
+      returnSphereBrush(sphereBrush)
     })
   })
 
-  createEffect(() => {
-    // intersect sphere and cone
-    evaluator.evaluate(
+  // create the beam brush by evaluating the intersection of the sphere and cone
+  const getBeamBrush = createMemo(() => {
+    cvgEvaluator.evaluate(
       getSphereBrush(),
-      getConeBrush(),
+      getConeBrush().brush,
       INTERSECTION,
       beamBrush
     )
-    // update brush
+
     beamBrush.updateMatrixWorld()
 
-    // render beam
-    graphing.requestRender()
+    // return inside a wrapper object to force dependents to
+    // see the change as a new reference
+    return { brush: beamBrush }
   })
+
+  // rerender whenever the beam brush changes
+  createEffect(
+    on(getBeamBrush, () => {
+      // render beam
+      graphing.requestRender()
+    })
+  )
 
   return (
     <>
-      <ConicalPingHandler coneBrush={getConeBrush()} />
+      <ConicalPingHandler coneBrush={getConeBrush().brush} />
     </>
   )
 }

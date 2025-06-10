@@ -44,9 +44,7 @@ export const Sensor: Component<{
   // when the indicator is clicked, upon up a sidebar
   // to edit the sensor's data
   function openSensorProperties(event?: MouseEvent) {
-    console.log('toggle sensor menu')
     // don't toggle menu if dragging is user's goal
-    console.log(`dragging: ${getDragging()}`)
     if (getDragging()) {
       setDragging(false)
       event?.stopPropagation()
@@ -95,10 +93,6 @@ export const Sensor: Component<{
 
   const [getMouseDown, setMouseDown] = createSignal(false)
 
-  createEffect(() => {
-    console.log(getMouseDown())
-  })
-
   // drag and drop the sensor
   function drag(event: MouseEvent) {
     if (!getMouseDown()) return
@@ -119,7 +113,6 @@ export const Sensor: Component<{
         cage.width
       )
     )
-    console.log(`x: ${sensor.data.xFeet} y: ${sensor.data.yFeet}`)
   }
 
   const [getDragging, setDragging] = createSignal(false)
@@ -143,10 +136,7 @@ export const Sensor: Component<{
           transform-origin="center"
           transform={`translate(${getX()}, ${getY()})`}
           fill-opacity="0.8"
-          onMouseDown={() => {
-            setMouseDown(true)
-            console.log('mouse down')
-          }}
+          onMouseDown={() => setMouseDown(true)}
         />
       </g>
       <g class="fill-primary pointer-events-none">

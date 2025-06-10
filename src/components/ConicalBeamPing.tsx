@@ -2,12 +2,16 @@ import {
   Component,
   createEffect,
   createMemo,
+  createSignal,
+  on,
   onCleanup,
   onMount,
 } from 'solid-js'
 import { GraphingContext } from '../contexts/GraphingContext'
 import { useContextOrThrow } from '../util/useContextOrThrow'
 import {
+  BufferAttribute,
+  BufferGeometry,
   Color,
   FrontSide,
   Mesh,
@@ -19,6 +23,13 @@ import { formatHex, oklch } from 'culori'
 import { SensorContext } from '../contexts/SensorContext'
 import { metersPerFoot } from '../util/mathConstants'
 import { clamp } from 'three/src/math/MathUtils.js'
+import {
+  borrowBrush,
+  cvgEvaluator,
+  pingMaterial,
+  returnSphereBrush,
+} from '../util/beamBrush'
+import { ConicalPingInput, ConicalPingOutput } from '../types/WorkerPackets'
 
 const pingWidth = 0.1 // feet
 const fadeDuration = 500 // milliseconds
@@ -32,78 +43,35 @@ export const ConicalBeamPing: Component<{
   const sensor = useContextOrThrow(SensorContext)
   const graphing = useContextOrThrow(GraphingContext)
 
-  // material used for displaying pings
-  const pingMaterial = new MeshBasicMaterial({
-    color: new Color(
-      formatHex(
-        oklch(
-          getComputedStyle(document.documentElement)
-            .getPropertyValue('--color-accent')
-            .trim()
-        )
-      )
-    ),
-    // opacity is driven by fadeOut()
-    transparent: true,
-    // always display the ping in front of anything else
-    // (prevents from being occluded by the beam itself)
-    depthTest: false,
-    depthWrite: false,
-
-    side: FrontSide,
-  })
-
-  // for csg operations
-  const evaluator = new Evaluator()
+  const ownedMaterial = pingMaterial.clone()
 
   // the outer sphere - the inner sphere forms a thin hollow sphere that
   // we can intersect with the cone to get a ping indicator
-  const outerSphereBrush = new Brush(new SphereGeometry(1), pingMaterial)
-  const innerSphereBrush = new Brush(new SphereGeometry(1), pingMaterial)
+  const outerSphereBrush = borrowBrush(ownedMaterial, { type: 'sphere' })
+  const innerSphereBrush = borrowBrush(ownedMaterial, { type: 'sphere' })
 
   // create the brush and mesh for the ping
-  const pingBrush = new Brush()
-  const pingMesh = new Mesh(pingBrush.geometry, pingMaterial)
+  let pingBrush: Brush
 
   onMount(() => {
     // add the ping to the canvas
-    graphing.scene.add(pingMesh)
+    graphing.scene.add(getPingBrush().brush)
     onCleanup(() => {
       // cleanup ping
-      graphing.scene.remove(pingMesh)
-      pingMesh.geometry.dispose()
-      pingMesh.material.dispose()
+      graphing.scene.remove(pingBrush)
+
+      // return borrowed brushes
+      returnSphereBrush(outerSphereBrush)
+      returnSphereBrush(innerSphereBrush)
 
       // rerender now that ping is removed
       graphing.requestRender()
     })
   })
 
-  createEffect(() => {
-    // update ping brush
-    evaluator.evaluate(
-      evaluator.evaluate(
-        getOuterSphereBrush(),
-        getInnerSphereBrush(),
-        SUBTRACTION
-      ),
-      props.coneBrush,
-      INTERSECTION,
-      pingBrush
-    )
-    pingBrush.updateMatrixWorld()
-
-    // apply ping brush to ping mesh
-    pingMesh.geometry.dispose()
-    pingMesh.geometry = pingBrush.geometry
-    pingMesh.updateMatrixWorld()
-
-    // render
-    graphing.requestRender()
-  })
-
   // generate the outer sphere centered on the sensor, with
   // a radius slightly larger than the ping distance
+  // console.log('defining getOuterSphereBrush')
   const getOuterSphereBrush = createMemo(() => {
     // scale to be slightly larger than the ping distance
     outerSphereBrush.scale.set(
@@ -142,13 +110,23 @@ export const ConicalBeamPing: Component<{
     return innerSphereBrush
   })
 
+  const getRingBrush = createMemo(() => {
+    const ring = cvgEvaluator.evaluate(
+      getOuterSphereBrush(),
+      getInnerSphereBrush(),
+      SUBTRACTION
+    )
+    return ring
+  })
+
   // fade the ping out over time
+  let [getOpacity, setOpacity] = createSignal(1)
   const startTime = performance.now() // animation start
   function fadeOut(now: number) {
     const elapsed = now - startTime
     const progress = clamp(elapsed / fadeDuration, 0, 1)
 
-    const opacity = 1 - Math.pow(progress, 2) // use the ease-in function t^2
+    setOpacity(1 - Math.pow(progress, 2)) // use the ease-in function t^2
 
     // tell parent ping is finished if animation done
     if (Math.abs(1 - progress) <= Number.EPSILON) {
@@ -156,16 +134,54 @@ export const ConicalBeamPing: Component<{
       return
     }
 
-    // set the opacity
-    pingMesh.material.opacity = opacity
-    graphing.requestRender()
-
     // continue in next frame
     requestAnimationFrame(fadeOut)
   }
 
   // start animating fade
   fadeOut(performance.now())
+
+  const getRawPingBrush = createMemo(() => {
+    if (pingBrush) {
+      // if the brush already exists, just update it
+      cvgEvaluator.evaluate(
+        getRingBrush(),
+        props.coneBrush,
+        INTERSECTION,
+        pingBrush
+      )
+    } else {
+      // if the brush doesn't exist, create it
+      pingBrush = cvgEvaluator.evaluate(
+        getRingBrush(),
+        props.coneBrush,
+        INTERSECTION
+      )
+    }
+
+    pingBrush.updateMatrixWorld()
+    return { brush: pingBrush }
+  })
+
+  // apply the material to the ping brush
+  const getPingBrush = createMemo(() => {
+    // update ping brush
+    const currentPingBrush = getRawPingBrush().brush
+    currentPingBrush.material = ownedMaterial
+    currentPingBrush.material.opacity = getOpacity()
+    currentPingBrush.material.needsUpdate = true
+
+    // use a wrapper to force the reference to change
+    // so that dependents will re-evaluate
+    return { brush: currentPingBrush }
+  })
+
+  createEffect(
+    on(getPingBrush, () => {
+      // render
+      graphing.requestRender()
+    })
+  )
 
   return <></>
 }

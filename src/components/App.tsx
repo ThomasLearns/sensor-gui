@@ -3,7 +3,7 @@ import { Grid } from './Grid'
 import { CageContext, CageData } from '../contexts/CageContext'
 import { createStore } from 'solid-js/store'
 import { Sidebar } from './Sidebar'
-import { SidebarContext, SidebarData } from '../contexts/SidebarContext'
+import { SidebarContext } from '../contexts/SidebarContext'
 import { SensorData } from '../types/SensorData'
 import { CreateSensorButton } from './CreateSensorButton'
 import { SensorsContext } from '../contexts/SensorsContext'
@@ -38,7 +38,9 @@ export const App: Component<Record<string, never>> = () => {
 
   let closeAppConfirmRef: undefined | HTMLDialogElement
   document.addEventListener('keyup', (event) => {
-    closeAppConfirmRef?.showModal()
+    if (event.key === 'Escape') {
+      closeAppConfirmRef?.showModal()
+    }
   })
 
   // keep derived context data up to date

@@ -49,10 +49,9 @@ export const Sensors: Component<{}> = () => {
   return (
     <>
       <g
-        onMouseLeave={(event) => {
-          console.log('leave')
+        onMouseLeave={(event) =>
           eventListeners.dragStop.forEach((subscriber) => subscriber(event))
-        }}
+        }
         onMouseUp={(event) =>
           eventListeners.dragStop.forEach((subscriber) => subscriber(event))
         }

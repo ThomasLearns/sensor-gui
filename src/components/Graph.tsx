@@ -11,12 +11,15 @@ import {
   WebGLRenderer,
 } from 'three'
 import { GraphingContext, GraphingType } from '../contexts/GraphingContext'
+import { SensorsContext } from '../contexts/SensorsContext'
+import { metersPerFoot } from '../util/mathConstants'
 
 export const Graph: Component<{
   children: JSX.Element
 }> = (props) => {
   const grid = useContextOrThrow(GridContext)
   const cage = useContextOrThrow(CageContext)
+  const sensors = useContextOrThrow(SensorsContext)
 
   const getWidth = createMemo(() => grid.right - grid.left)
 
@@ -25,18 +28,37 @@ export const Graph: Component<{
   // rendering the scene
   let threeContainer: undefined | HTMLDivElement
   const scene = new Scene()
-  const camera = new OrthographicCamera(
-    0,
-    cage.length,
-    cage.width,
-    0,
-    -100 * Math.max(cage.length, cage.width),
-    100 * Math.max(cage.length, cage.width)
-  )
+  const camera = new OrthographicCamera(0, cage.length, cage.width, 0, -1, 1)
   camera.position.set(0, 0, 0)
 
+  // use the max range to determine the size of the fustrum
+  // get the max range from the longest range sensor
+  const maxRange = createMemo(
+    () =>
+      sensors.sensors.reduce(
+        (max, sensor) => (max > sensor.maxRange ? max : sensor.maxRange),
+        0
+      ) / metersPerFoot
+  )
+
+  // set the camera near and far planes to fit max range of sensors
+  createEffect(() => {
+    // update planes
+    camera.far = -maxRange() - Number.EPSILON
+    camera.near = maxRange() + Number.EPSILON
+
+    // update camera
+    camera.updateProjectionMatrix()
+    graphing.requestRender() // not sure if needed, but would assume it is (inconvenient to test)
+  })
+
   // renderer
-  const renderer = new WebGLRenderer({ alpha: true, antialias: true })
+  const renderer = new WebGLRenderer({
+    alpha: true,
+    antialias: true,
+    depth: false,
+    powerPreference: 'high-performance',
+  })
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 

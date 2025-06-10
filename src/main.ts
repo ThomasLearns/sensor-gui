@@ -29,7 +29,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload', 'preload.js'),
     },
-    fullscreen: true,
+    fullscreen: false,
   })
 
   // and load the index.html of the app.

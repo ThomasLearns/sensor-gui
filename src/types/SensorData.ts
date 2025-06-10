@@ -4,7 +4,6 @@ export type UltrasonicData = {
   type: 'ultrasonic'
   renderer: Component<{}>
   measuringAngle: number
-  maxRange: number
 
   getPingHandler: Accessor<undefined | ((distance: number) => void)>
   setPingHandler: Setter<undefined | ((distance: number) => void)>
@@ -24,6 +23,9 @@ export type SensorData = {
 
   // number used to identify data from this sensor
   routNumber: number
+
+  // needed for ping calculations and performance optimization
+  maxRange: number
 } & SensorType
 
 export const sensorTypeLabels: { [K in SensorType['type']]: string } = {

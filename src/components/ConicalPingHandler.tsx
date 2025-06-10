@@ -1,6 +1,7 @@
 import {
   Accessor,
   Component,
+  createEffect,
   createMemo,
   createSignal,
   For,
@@ -51,6 +52,7 @@ export const ConicalPingHandler: Component<{
       setPingsData('pings', pinsData.pings.length, { distance: feet })
     })
   })
+
   return (
     <>
       {/* create a ping object for each distance tracked */}

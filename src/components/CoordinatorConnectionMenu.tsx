@@ -34,10 +34,6 @@ export const CoordinatorConnectionMenu: Component<{
     operationsInProgress()[index][1](false)
   }
 
-  createEffect(() => {
-    console.log(props.devices)
-  })
-
   return (
     <>
       <div class="flex h-min flex-col select-none w-[15rem]">
