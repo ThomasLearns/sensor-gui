@@ -8,10 +8,10 @@ import {
   SphereGeometry,
 } from 'three'
 import { Brush, Evaluator } from 'three-bvh-csg'
-import { assertUnreachable } from '../../../util/assertUnreachable'
-import { getConeGeometry } from './coneGeometryPool'
-import { BrushPool, BrushSpecifics } from '../../../types/BrushPool'
-import { keys } from '../../../util/keys'
+import { assertUnreachable } from '../../../util/assertUnreachable.js'
+import { getConeGeometry } from './coneGeometryPool.js'
+import { BrushPool, BrushSpecifics } from '../../../types/BrushPool.js'
+import { keys } from '../../../util/keys.js'
 
 // use the same geometry for all spheres
 const sphereGeometry = new SphereGeometry(1)

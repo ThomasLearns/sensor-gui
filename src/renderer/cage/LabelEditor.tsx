@@ -1,6 +1,6 @@
 import { Component, createEffect, For, on } from 'solid-js'
-import { CageContext } from '../contexts/CageContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
+import { CageContext } from '../contexts/CageContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
 import { createStore, unwrap } from 'solid-js/store'
 
 // modeal for setting labels of each sector

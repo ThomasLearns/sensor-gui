@@ -1,7 +1,7 @@
 import { Component, createEffect, createMemo, JSX, onMount } from 'solid-js'
-import { CageContext } from '../contexts/CageContext'
-import { GridContext } from '../contexts/GridContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
+import { CageContext } from '../contexts/CageContext.js'
+import { GridContext } from '../contexts/GridContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
 import {
   BoxGeometry,
   Mesh,
@@ -10,9 +10,9 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three'
-import { GraphingContext, GraphingType } from '../contexts/GraphingContext'
-import { SensorsContext } from '../contexts/SensorsContext'
-import { metersPerFoot } from '../../util/mathConstants'
+import { GraphingContext, GraphingType } from '../contexts/GraphingContext.js'
+import { SensorsContext } from '../contexts/SensorsContext.js'
+import { metersPerFoot } from '../../util/mathConstants.js'
 
 export const Graph: Component<{
   children: JSX.Element

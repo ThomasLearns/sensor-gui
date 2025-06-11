@@ -1,9 +1,9 @@
 import { VsAdd } from 'solid-icons/vs'
 import { Component, createSignal } from 'solid-js'
-import { SensorsContext } from '../contexts/SensorsContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { UltrasonicRenderer } from '../sensors/renderers/UltrasonicRenderer'
-import { SensorData } from '../../types/SensorData'
+import { SensorsContext } from '../contexts/SensorsContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { UltrasonicRenderer } from '../sensors/renderers/UltrasonicRenderer.js'
+import { SensorData } from '../../types/SensorData.js'
 
 // a button that creates a sensor
 export const CreateSensorButton: Component<{}> = () => {

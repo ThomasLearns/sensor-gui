@@ -1,7 +1,7 @@
 import { Component, createEffect, For } from 'solid-js'
-import { CageContext } from '../contexts/CageContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { GridContext } from '../contexts/GridContext'
+import { CageContext } from '../contexts/CageContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { GridContext } from '../contexts/GridContext.js'
 
 // display the lines and labels comprising the grid's background
 export const GridLines: Component<{}> = () => {

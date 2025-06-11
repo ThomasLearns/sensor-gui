@@ -6,16 +6,16 @@ import {
   onCleanup,
   onMount,
 } from 'solid-js'
-import { useContextOrThrow } from '../../../util/useContextOrThrow'
+import { useContextOrThrow } from '../../../util/useContextOrThrow.js'
 import { Quaternion, Vector3 } from 'three'
-import { SensorContext } from '../../contexts/SensorContext'
-import { metersPerFoot } from '../../../util/mathConstants'
+import { SensorContext } from '../../contexts/SensorContext.js'
+import { metersPerFoot } from '../../../util/mathConstants.js'
 import { Brush, INTERSECTION } from 'three-bvh-csg'
-import { GraphingContext } from '../../contexts/GraphingContext'
-import { ConicalPingHandler } from './ConicalPingHandler'
-import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool'
-import { beamMaterial } from '../../3dRendering/materials'
-import { csgEvaluator } from '../../3dRendering/evaluator'
+import { GraphingContext } from '../../contexts/GraphingContext.js'
+import { ConicalPingHandler } from './ConicalPingHandler.jsx'
+import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool.js'
+import { beamMaterial } from '../../3dRendering/materials.js'
+import { csgEvaluator } from '../../3dRendering/evaluator.js'
 
 // display a conical beam using a sensor's properties
 export const ConicalBeam: Component = () => {

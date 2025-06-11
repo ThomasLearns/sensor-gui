@@ -1,5 +1,5 @@
 import { Accessor, createContext } from 'solid-js'
-import { SensorData } from '../../types/SensorData'
+import { SensorData } from '../../types/SensorData.js'
 
 // creates context information for each sensor to have about itself
 export const SensorContext = createContext<{

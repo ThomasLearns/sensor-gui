@@ -7,15 +7,15 @@ import {
   onCleanup,
   onMount,
 } from 'solid-js'
-import { GraphingContext } from '../../contexts/GraphingContext'
-import { useContextOrThrow } from '../../../util/useContextOrThrow'
+import { GraphingContext } from '../../contexts/GraphingContext.js'
+import { useContextOrThrow } from '../../../util/useContextOrThrow.js'
 import { Brush, INTERSECTION, SUBTRACTION } from 'three-bvh-csg'
-import { SensorContext } from '../../contexts/SensorContext'
-import { metersPerFoot } from '../../../util/mathConstants'
+import { SensorContext } from '../../contexts/SensorContext.js'
+import { metersPerFoot } from '../../../util/mathConstants.js'
 import { clamp } from 'three/src/math/MathUtils.js'
-import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool'
-import { pingMaterial } from '../../3dRendering/materials'
-import { csgEvaluator } from '../../3dRendering/evaluator'
+import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool.js'
+import { pingMaterial } from '../../3dRendering/materials.js'
+import { csgEvaluator } from '../../3dRendering/evaluator.js'
 
 const pingWidth = 0.1 // feet
 const fadeDuration = 500 // milliseconds

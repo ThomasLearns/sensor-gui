@@ -1,11 +1,11 @@
 import { batch, Component, createSignal, Show } from 'solid-js'
 import { SetStoreFunction, unwrap } from 'solid-js/store'
-import { CageContext, CageData } from '../contexts/CageContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { getValidNumberInput } from '../../util/getValidNumberInput'
+import { CageContext, CageData } from '../contexts/CageContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { getValidNumberInput } from '../../util/getValidNumberInput.js'
 import { VsEdit, VsSave } from 'solid-icons/vs'
 import { IoDownload } from 'solid-icons/io'
-import { LabelEditor } from './LabelEditor'
+import { LabelEditor } from './LabelEditor.js'
 
 // settings sidebar menu for cage related parameters
 export const CageSettingsEditor: Component<{

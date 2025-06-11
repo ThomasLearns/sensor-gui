@@ -1,7 +1,7 @@
 import { VsTrash } from 'solid-icons/vs'
 import { Component } from 'solid-js'
-import { SensorsContext } from '../contexts/SensorsContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
+import { SensorsContext } from '../contexts/SensorsContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
 
 // button that clears all sensors
 export const ClearSensorsButton: Component = () => {

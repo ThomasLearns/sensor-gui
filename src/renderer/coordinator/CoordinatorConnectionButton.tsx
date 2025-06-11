@@ -7,9 +7,9 @@ import {
   runWithOwner,
 } from 'solid-js'
 import { createStore, reconcile, unwrap } from 'solid-js/store'
-import { SidebarContext } from '../contexts/SidebarContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { CoordinatorConnectionMenu } from './CoordinatorConnectionMenu'
+import { SidebarContext } from '../contexts/SidebarContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { CoordinatorConnectionMenu } from './CoordinatorConnectionMenu.js'
 
 // open menu for managing coordinator connections
 export const CoordinatorConnectionButton: Component = () => {

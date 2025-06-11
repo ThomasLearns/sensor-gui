@@ -8,14 +8,14 @@ import {
   onMount,
   runWithOwner,
 } from 'solid-js'
-import { SensorData } from '../../types/SensorData'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { GridContext } from '../contexts/GridContext'
-import { SidebarContext } from '../contexts/SidebarContext'
-import { SensorEditor } from './SensorEditor'
+import { SensorData } from '../../types/SensorData.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { GridContext } from '../contexts/GridContext.js'
+import { SidebarContext } from '../contexts/SidebarContext.js'
+import { SensorEditor } from './SensorEditor.jsx'
 import { SetStoreFunction } from 'solid-js/store'
-import { SensorContext } from '../contexts/SensorContext'
-import { CageContext } from '../contexts/CageContext'
+import { SensorContext } from '../contexts/SensorContext.js'
+import { CageContext } from '../contexts/CageContext.js'
 import { clamp } from 'three/src/math/MathUtils.js'
 
 // color of elements comprising sensor svg

@@ -8,9 +8,9 @@ import {
   Selection,
 } from 'd3'
 import { Component, createEffect } from 'solid-js'
-import { GridContext } from '../contexts/GridContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { CageContext } from '../contexts/CageContext'
+import { GridContext } from '../contexts/GridContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { CageContext } from '../contexts/CageContext.js'
 
 // the maximum "padding" between the axes and the grid.
 // the actual padding is driven as well by the axis width allocated

@@ -1,10 +1,10 @@
 import { Component, createMemo, For } from 'solid-js'
-import { Sensor } from './Sensor'
+import { Sensor } from './Sensor.jsx'
 import { createStore } from 'solid-js/store'
-import { SensorContext } from '../contexts/SensorContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { SensorsContext } from '../contexts/SensorsContext'
-import { GridContext } from '../contexts/GridContext'
+import { SensorContext } from '../contexts/SensorContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { SensorsContext } from '../contexts/SensorsContext.js'
+import { GridContext } from '../contexts/GridContext.js'
 
 // manage the display of each sensor and their pings
 export const Sensors: Component<{}> = () => {

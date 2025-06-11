@@ -1,7 +1,7 @@
 import { Component, For } from 'solid-js'
-import { CageContext } from '../contexts/CageContext'
-import { GridContext } from '../contexts/GridContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
+import { CageContext } from '../contexts/CageContext.js'
+import { GridContext } from '../contexts/GridContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
 
 // display the labels for each grid sector
 export const GridLabels: Component<{}> = () => {

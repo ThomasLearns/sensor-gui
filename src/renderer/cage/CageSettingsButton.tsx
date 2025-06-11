@@ -1,11 +1,11 @@
 import { VsSettingsGear } from 'solid-icons/vs'
 import { Component, createSignal, getOwner, runWithOwner, Show } from 'solid-js'
-import { SidebarContext } from '../contexts/SidebarContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { CageSettingsEditor } from './CageSettingsEditor'
+import { SidebarContext } from '../contexts/SidebarContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { CageSettingsEditor } from './CageSettingsEditor.js'
 import { Portal } from 'solid-js/web'
 import { SetStoreFunction } from 'solid-js/store'
-import { CageData } from '../contexts/CageContext'
+import { CageData } from '../contexts/CageContext.js'
 
 // button toggling cage settings editor
 export const CageSettingsButton: Component<{

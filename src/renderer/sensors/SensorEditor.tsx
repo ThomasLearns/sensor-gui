@@ -1,13 +1,13 @@
 import { Component, createSignal, For } from 'solid-js'
-import { CageContext } from '../contexts/CageContext'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { SensorData } from '../../types/SensorData'
+import { CageContext } from '../contexts/CageContext.js'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { SensorData } from '../../types/SensorData.js'
 import { SetStoreFunction } from 'solid-js/store'
-import { SensorContext } from '../contexts/SensorContext'
-import { getValidNumberInput } from '../../util/getValidNumberInput'
+import { SensorContext } from '../contexts/SensorContext.js'
+import { getValidNumberInput } from '../../util/getValidNumberInput.js'
 import { VsTrash } from 'solid-icons/vs'
-import { SensorsContext } from '../contexts/SensorsContext'
-import { sensorTypeLabels } from '../../localization/sensorTypeLabels'
+import { SensorsContext } from '../contexts/SensorsContext.js'
+import { sensorTypeLabels } from '../../localization/sensorTypeLabels.js'
 
 export const SensorEditor: Component<{
   setSensor: SetStoreFunction<SensorData>

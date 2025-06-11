@@ -1,5 +1,5 @@
-import { ConicalBeam } from '../../beams/conical/ConicalBeam'
-import { UltrasonicData } from '../../../types/SensorData'
+import { ConicalBeam } from '../../beams/conical/ConicalBeam.jsx'
+import { UltrasonicData } from '../../../types/SensorData.js'
 
 // render graphics used for displaying an ultrasonic sensor and its pings
 export const UltrasonicRenderer: UltrasonicData['renderer'] = () => {

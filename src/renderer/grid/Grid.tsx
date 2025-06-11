@@ -7,25 +7,14 @@ import {
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { scaleLinear } from 'd3'
-import { GridAxes } from './GridAxes'
-import { GridContext, GridData } from '../contexts/GridContext'
-import { CageContext } from '../contexts/CageContext'
-import { GridLines } from './GridLines'
-import { useContextOrThrow } from '../../util/useContextOrThrow'
-import { GridLabels } from './GridLabels'
-import { Sensors } from '../sensors/Sensors'
-import {
-  BoxGeometry,
-  Color,
-  Mesh,
-  MeshBasicMaterial,
-  OrthographicCamera,
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer,
-} from 'three'
-import { GraphingContext, GraphingType } from '../contexts/GraphingContext'
-import { Graph } from '../3dRendering/Graph'
+import { GridAxes } from './GridAxes.jsx'
+import { GridContext, GridData } from '../contexts/GridContext.js'
+import { CageContext } from '../contexts/CageContext.js'
+import { GridLines } from './GridLines.jsx'
+import { useContextOrThrow } from '../../util/useContextOrThrow.js'
+import { GridLabels } from './GridLabels.jsx'
+import { Sensors } from '../sensors/Sensors.jsx'
+import { Graph } from '../3dRendering/Graph.jsx'
 
 // handle displaying the cage grid view and everything in it
 export const Grid: Component<{}> = () => {
