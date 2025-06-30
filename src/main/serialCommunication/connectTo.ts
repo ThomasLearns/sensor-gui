@@ -22,7 +22,7 @@ export async function connectTo(
       return device
     })
     .then((device) => {
-      device.parser.on('error', () => disconnectFrom(path, devices))
+      device.parser?.on('error', () => disconnectFrom(path, devices))
       return device
     })
     .catch((error) => {

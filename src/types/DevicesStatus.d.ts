@@ -1,3 +1,5 @@
+import { SerialPort, ReadlineParser } from 'serialport'
+
 // used in the renderer to see which devices are connected
 export type DeviceConnections = {
   [path: string]: boolean
