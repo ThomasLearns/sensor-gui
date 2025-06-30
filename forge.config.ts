@@ -8,6 +8,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     ignore: [/\/\.(?!vite)/],
+    name: 'Game of Drones Sensor GUI',
   },
   rebuildConfig: {
     force: true,
