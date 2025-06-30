@@ -8,7 +8,10 @@ export function openPort<DeviceType extends Device<'portInfo'>>(
   return new Promise((resolve, reject) => {
     // create serial port
     const port = new SerialPort(
-      { path: device.portInfo.path, baudRate: 115200 },
+      {
+        path: device.portInfo.path,
+        baudRate: 115200,
+      },
       (error) => {
         if (error) {
           // failed to open serial port

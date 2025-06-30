@@ -63,5 +63,8 @@ export async function handshake<DeviceType extends Device<'port'>>(
         return
       }
     })
+  }).then((result) => {
+    parser.removeAllListeners()
+    return result
   })
 }

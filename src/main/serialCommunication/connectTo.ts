@@ -21,6 +21,10 @@ export async function connectTo(
       readPings(device)
       return device
     })
+    .then((device) => {
+      device.parser.on('error', () => disconnectFrom(path, devices))
+      return device
+    })
     .catch((error) => {
       // if anything goes wrong, clean up the connection before throwing
 

@@ -3,7 +3,10 @@ import { sendJam, sendPing } from '../serialCommunication/initializeSerial'
 import { Device } from '../../types/DevicesStatus'
 
 export function readPings(device: Device<'port'>) {
-  const parser = device.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
+  const parser: ReadlineParser = device.port.pipe(
+    new ReadlineParser({ delimiter: '\r\n' })
+  )
+  device.parser = parser
 
   parser.on('data', (line: unknown) => {
     if (typeof line !== 'string') return
@@ -26,5 +29,10 @@ export function readPings(device: Device<'port'>) {
       // send a jam packet
       sendJam(parseInt(segments[2]), parseInt(segments[3]))
     }
+
+    // without this line, eventually this event callback will stop being called.
+    // I don't know why. Details on this solution may be found here:
+    // https://github.com/serialport/node-serialport/issues/2117
+    device.port.resume()
   })
 }
