@@ -111,7 +111,10 @@ export const ConicalBeamPing: Component<{
     const elapsed = now - startTime
     const progress = clamp(elapsed / fadeDuration, 0, 1)
 
-    setOpacity(1 - Math.pow(progress, 2)) // use the ease-in function t^2
+    // commented out due to performance reasons
+    // its fully functional, but for multiple sensors it can
+    // get laggy. Re-enable when threejs parts of program have better performance
+    // setOpacity(1 - Math.pow(progress, 2)) // use the ease-in function t^2
 
     // tell parent ping is finished if animation done
     if (Math.abs(1 - progress) <= Number.EPSILON) {
