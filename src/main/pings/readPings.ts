@@ -1,7 +1,6 @@
 import { ReadlineParser } from 'serialport'
-import { sendPing } from '../serialCommunication/initializeSerial'
+import { sendJam, sendPing } from '../serialCommunication/initializeSerial'
 import { Device } from '../../types/DevicesStatus'
-import { jam } from './jam'
 
 export function readPings(device: Device<'port'>) {
   const parser = device.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
@@ -23,8 +22,9 @@ export function readPings(device: Device<'port'>) {
         sensorId: parseInt(segments[1]),
         distance: parseInt(segments[2]),
       })
-    } else if (segments[0] === '2' && segments.length === 4) {
-      jam(parseInt(segments[2]), parseInt(segments[3]))
+    } else if (segments[0] === '3' && segments.length === 4) {
+      // send a jam packet
+      sendJam(parseInt(segments[2]), parseInt(segments[3]))
     }
   })
 }

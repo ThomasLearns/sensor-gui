@@ -16,8 +16,11 @@ export async function handshake<DeviceType extends Device<'port'>>(
   device: DeviceType
 ): Promise<DeviceType> {
   // for listening to response
-  const parser = device.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
-  return new Promise((resolve, reject) => {
+  const parser: ReadlineParser = device.port.pipe(
+    new ReadlineParser({ delimiter: '\r\n' })
+  )
+
+  return new Promise<DeviceType>((resolve, reject) => {
     // if device does not respond, handhshake fails
     const timeoutTimer = setTimeout(() => {
       parser.removeAllListeners()

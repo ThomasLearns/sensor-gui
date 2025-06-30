@@ -1,13 +1,7 @@
+import { BiRegularErrorCircle } from 'solid-icons/bi'
 import { FaBrandsUsb } from 'solid-icons/fa'
 import { VsDebugDisconnect } from 'solid-icons/vs'
-import {
-  Component,
-  createEffect,
-  createSignal,
-  For,
-  mapArray,
-  Show,
-} from 'solid-js'
+import { Component, createSignal, For, mapArray, Show } from 'solid-js'
 
 // allow configuration of coordinator connections
 export const CoordinatorConnectionMenu: Component<{
@@ -24,13 +18,30 @@ export const CoordinatorConnectionMenu: Component<{
     }
   )
 
+  // tracks latest error message for each connection
+  const getConnectionErrors = mapArray(
+    () => props.devices,
+    () => {
+      const [get, set] = createSignal('')
+      return { get, set }
+    }
+  )
+
   // connect or disconnect to a port
   async function toggleConnection(index: number) {
+    // clear error and start loading spinner
     operationsInProgress()[index][1](true)
-    await window.electronAPI.trySetConnection(
+    getConnectionErrors()[index].set('')
+
+    // request connection or disconnection from main process
+    const result = await window.electronAPI.trySetConnection(
       props.devices[index].path,
       !props.devices[index].connected
     )
+    // set the error if operation failed (result isn't true)
+    getConnectionErrors()[index].set(result === true ? '' : result)
+
+    // stop loading spinner
     operationsInProgress()[index][1](false)
   }
 
@@ -86,6 +97,16 @@ export const CoordinatorConnectionMenu: Component<{
                     </button>
                   </div>
                 </li>
+                {/* show error message if it is set */}
+                <Show when={getConnectionErrors()[getIndex()].get() !== ''}>
+                  <div class="flex my-2 mb-3 text-error">
+                    <BiRegularErrorCircle
+                      class="mx-2"
+                      size="20"
+                    />
+                    {getConnectionErrors()[getIndex()].get()}
+                  </div>
+                </Show>
               </>
             )}
           </For>

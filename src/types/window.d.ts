@@ -15,7 +15,10 @@ declare global {
         callback: (devices: DeviceConnections) => unknown
       ) => void
       // try to connect or disconnect a device
-      trySetConnection: (path: string, connected: boolean) => Promise<void>
+      trySetConnection: (
+        path: string,
+        connected: boolean
+      ) => Promise<true | string>
       // save and load cage configuration
       saveCageConfiguration: (cage: CageData) => Promise<boolean>
       loadCageConfiguration: () => Promise<CageData | null>

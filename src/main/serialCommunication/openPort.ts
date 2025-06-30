@@ -12,7 +12,9 @@ export function openPort<DeviceType extends Device<'portInfo'>>(
       (error) => {
         if (error) {
           // failed to open serial port
-          reject(`Could not connect to ${device.portInfo.path}`)
+          reject(
+            `Could not connect to ${device.portInfo.path}: ${error.message}`
+          )
           return
         }
 
