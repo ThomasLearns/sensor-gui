@@ -36,79 +36,46 @@ export const Sensors: Component<{}> = () => {
       )
   })
 
-  const [eventListeners, setEventListeners] = createStore<{
-    drag: ((event: MouseEvent) => unknown)[]
-    dragStop: ((event: MouseEvent) => unknown)[]
-  }>({
-    drag: [],
-    dragStop: [],
-  })
-
-  // create event listeners for letting sensors be dragged
-  function onDrag(callback: (event: MouseEvent) => unknown) {
-    setEventListeners('drag', eventListeners.drag.length, () => callback)
-    return () =>
-      setEventListeners('drag', (prev) =>
-        prev.filter((subscriber) => subscriber !== callback)
-      )
-  }
-  function onDragStop(callback: (event: MouseEvent) => unknown) {
-    setEventListeners('dragStop', eventListeners.drag.length, () => callback)
-    return () =>
-      setEventListeners('dragStop', (prev) =>
-        prev.filter((subscriber) => subscriber !== callback)
-      )
-  }
+  // give sensor children access to rect for bounding calculations
+  let rectRef: undefined | SVGRectElement
 
   return (
     <>
-      <g
-        onMouseLeave={(event) =>
-          eventListeners.dragStop.forEach((subscriber) => subscriber(event))
-        }
-        onMouseUp={(event) =>
-          eventListeners.dragStop.forEach((subscriber) => subscriber(event))
-        }
-        onMouseMove={(event) =>
-          eventListeners.drag.forEach((subscriber) => subscriber(event))
-        }
-      >
-        {/* expand area to detect mouse movements anywhere on grid */}
-        <rect
-          opacity="0"
-          x={grid.left}
-          y={grid.top}
-          width={grid.right - grid.left}
-          height={grid.bottom - grid.top}
-        />
-        {/* display each sensor */}
-        <For each={sensors.sensors}>
-          {(sensor, index) => (
-            <>
-              <SensorContext.Provider
-                value={{
-                  data: sensor,
-                  index: index,
-                  calculate: {
-                    theta: createMemo(
-                      () => (sensor.horizontalAngle * Math.PI) / 180
-                    ),
-                    phi: createMemo(
-                      () => ((-sensor.verticalAngle + 90) * Math.PI) / 180
-                    ),
-                  },
-                }}
-              >
-                <Sensor
-                  onDrag={onDrag}
-                  onDragStop={onDragStop}
-                  setSensor={createStore(sensor)[1]}
-                />
-              </SensorContext.Provider>
-            </>
-          )}
-        </For>
-      </g>
+      {/* expand area to detect mouse movements anywhere on grid */}
+      <rect
+        ref={rectRef}
+        opacity="0"
+        x={grid.left}
+        y={grid.top}
+        width={grid.right - grid.left}
+        height={grid.bottom - grid.top}
+      />
+      {/* display each sensor */}
+      <For each={sensors.sensors}>
+        {(sensor, index) => (
+          <>
+            <SensorContext.Provider
+              value={{
+                data: sensor,
+                index: index,
+                calculate: {
+                  theta: createMemo(
+                    () => (sensor.horizontalAngle * Math.PI) / 180
+                  ),
+                  phi: createMemo(
+                    () => ((-sensor.verticalAngle + 90) * Math.PI) / 180
+                  ),
+                },
+              }}
+            >
+              <Sensor
+                cageRef={rectRef}
+                setSensor={createStore(sensor)[1]}
+              />
+            </SensorContext.Provider>
+          </>
+        )}
+      </For>
     </>
   )
 }

@@ -12,6 +12,8 @@ import { ClearSensorsButton } from './sensors/ClearSensorsButton.jsx'
 import { CoordinatorConnectionButton } from './coordinator/CoordinatorConnectionButton.jsx'
 import { QuitConfirmation } from './QuitConfirmation.jsx'
 import { QuitButton } from './QuitButton.jsx'
+import { DragShield } from './DragShield.jsx'
+import { DragContext } from './contexts/DragContext.js'
 
 // this is the top level component of the renderer. It is inserted into the root element
 // (a div inside <body>)
@@ -70,49 +72,78 @@ export const App: Component<Record<string, never>> = () => {
     cleanupSidebar = cleanup ?? (() => {})
   }
 
-  // for testing only
-  const [pingHandler, setPingHandler] = createSignal<
-    undefined | ((centimeters: number) => void)
-  >()
   const [sensors, setSensors] = createStore<SensorData[]>([])
+
+  // store callbacks used to handle drag events
+  const [getDragCallback, setDragCallback] =
+    createSignal<(event: MouseEvent) => unknown>()
+  const [getDragStopCallback, setDragStopCallback] =
+    createSignal<(event: MouseEvent) => unknown>()
+  // will be set to a function to enable the drag shield
+  let enableDrag: undefined | (() => unknown)
+  const setEnableDrag = (callback: () => unknown) => {
+    enableDrag = callback
+  }
+
+  // open the drag shield until drag is over
+  // pass events to callbacks as directed while dragging
+  const startDrag = (
+    onDrag: (event: MouseEvent) => unknown,
+    onDragStop: (event: MouseEvent) => unknown
+  ) => {
+    console.log('starting drag')
+    console.log(`Enable drag set: ${enableDrag !== undefined}`)
+    setDragCallback(() => onDrag)
+    setDragStopCallback(() => onDragStop)
+    enableDrag?.()
+  }
 
   return (
     <>
-      <CageContext.Provider value={cage}>
-        <SidebarContext.Provider value={{ setSidebar: setSidebarContent }}>
-          <SensorsContext.Provider
-            value={{
-              sensors,
-              setSensors,
-            }}>
-            <div class="w-screen h-screen flex bg-base-100">
-              {/* unhandled clicks in this dev will close the sidebar */}
-              <div
-                class="size-full"
-                onClick={() => setSidebarContent()}>
-                <div class="flex flex-col size-full">
-                  <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
-                    <CreateSensorButton />
-                    <ClearSensorsButton />
-                    <CageSettingsButton setCage={setCage} />
-                    <CoordinatorConnectionButton />
-                    <QuitButton
-                      onClick={() => closeAppConfirmRef?.showModal()}
-                    />
+      <DragContext.Provider value={{ startDrag }}>
+        <CageContext.Provider value={cage}>
+          <SidebarContext.Provider value={{ setSidebar: setSidebarContent }}>
+            <SensorsContext.Provider
+              value={{
+                sensors,
+                setSensors,
+              }}>
+              <div class="w-screen h-screen flex bg-base-100">
+                {/* unhandled clicks in this dev will close the sidebar */}
+                <div
+                  class="size-full"
+                  onClick={() => setSidebarContent()}>
+                  <div class="flex flex-col size-full">
+                    <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
+                      <CreateSensorButton />
+                      <ClearSensorsButton />
+                      <CageSettingsButton setCage={setCage} />
+                      <CoordinatorConnectionButton />
+                      <QuitButton
+                        onClick={() => closeAppConfirmRef?.showModal()}
+                      />
+                    </div>
+                    <Grid />
                   </div>
-                  <Grid />
                 </div>
+                <Sidebar>
+                  <>{sidebar()}</>
+                </Sidebar>
               </div>
-              <Sidebar>
-                <>{sidebar()}</>
-              </Sidebar>
-            </div>
-          </SensorsContext.Provider>
-        </SidebarContext.Provider>
-      </CageContext.Provider>
+            </SensorsContext.Provider>
+          </SidebarContext.Provider>
+        </CageContext.Provider>
+      </DragContext.Provider>
 
       {/* modal for confirming user's intent to exit app */}
       <QuitConfirmation ref={closeAppConfirmRef} />
+
+      {/* Used to catch mouse events first when dragging something */}
+      <DragShield
+        setEnable={setEnableDrag}
+        onDrag={getDragCallback()}
+        onDragEnd={getDragStopCallback()}
+      />
     </>
   )
 }

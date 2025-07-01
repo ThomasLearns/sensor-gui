@@ -16,16 +16,12 @@ import { SensorEditor } from './SensorEditor.jsx'
 import { SetStoreFunction } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext.js'
 import { CageContext } from '../contexts/CageContext.js'
-import { clamp } from 'three/src/math/MathUtils.js'
-
-// color of elements comprising sensor svg
-// const textColor = 'oklch(57.7% 0.245 27.325)'
+import { DragContext } from '../contexts/DragContext.js'
 
 // Visual indicator for a sensor and its pings
 export const Sensor: Component<{
   setSensor: SetStoreFunction<SensorData>
-  onDrag: (callback: (event: MouseEvent) => unknown) => () => unknown
-  onDragStop: (callback: (event: MouseEvent) => unknown) => () => unknown
+  cageRef: SVGRectElement | undefined
 }> = (props) => {
   // we need grid contextual data to scale feet to screen pixels
   const grid = useContextOrThrow(GridContext)
@@ -95,48 +91,71 @@ export const Sensor: Component<{
 
   // drag and drop the sensor
   function drag(event: MouseEvent) {
-    if (!getMouseDown()) return
+    if (props.cageRef === undefined) return
 
-    setDragging(true)
+    // used to compare mouse position with cage
+    const boundingRect = props.cageRef.getBoundingClientRect()
 
-    props.setSensor('xFeet', (prev) =>
-      clamp(
-        Math.round(1e2 * (prev + event.movementX / grid.pixelsPerFoot)) / 1e2,
-        0,
-        cage.length
-      )
+    // set position of sensor based on mouse position
+    props.setSensor(
+      'xFeet',
+      // put on left or right if out of bounds, or at mouse x position (in feet) otherwise
+      event.x <= boundingRect.left
+        ? 0
+        : event.x >= boundingRect.right
+        ? cage.length
+        : ((event.x - boundingRect.left) /
+            (boundingRect.right - boundingRect.left)) *
+          cage.length
     )
     props.setSensor('yFeet', (prev) =>
-      clamp(
-        Math.round(1e2 * (prev - event.movementY / grid.pixelsPerFoot)) / 1e2,
-        0,
-        cage.width
-      )
+      // put on bottom or top if out of bounds, or at mouse y position (in feet) otherwise
+      event.y <= boundingRect.top
+        ? cage.width
+        : event.y >= boundingRect.bottom
+        ? 0
+        : ((boundingRect.bottom - event.y) /
+            (boundingRect.bottom - boundingRect.top)) *
+          cage.width
     )
   }
 
   const [getDragging, setDragging] = createSignal(false)
 
-  // subscribe to mouse events anywhere on grid
-  onCleanup(props.onDrag(drag))
-  onCleanup(
-    props.onDragStop(() => {
+  // get ability to track drags anywhere in window
+  const dragContext = useContextOrThrow(DragContext)
+
+  function startDragging(event: MouseEvent) {
+    if (!getMouseDown() || getDragging()) return
+    setDragging(true)
+    drag(event)
+    dragContext.startDrag(drag, () => {
+      console.log('drag stop')
+      setDragging(false)
       setMouseDown(false)
     })
-  )
+  }
 
   return (
     <>
-      <g class="stroke-primary fill-base-200">
+      <g
+        class="stroke-primary fill-base-200"
+        onMouseLeave={startDragging}
+        onMouseMove={startDragging}
+      >
         <circle
           r="1rem"
-          onClick={openSensorProperties}
+          onClick={(event) => {
+            if (getDragging()) return
+            openSensorProperties(event)
+          }}
           class="cursor-pointer"
           stroke-width={usingSidebar() === true ? '1' : '0'}
           transform-origin="center"
           transform={`translate(${getX()}, ${getY()})`}
           fill-opacity="0.8"
           onMouseDown={() => setMouseDown(true)}
+          onMouseUp={() => setMouseDown(false)}
         />
       </g>
       <g class="fill-primary pointer-events-none">
