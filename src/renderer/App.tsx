@@ -10,6 +10,8 @@ import { SensorsContext } from './contexts/SensorsContext.js'
 import { CageSettingsButton } from './cage/CageSettingsButton.jsx'
 import { ClearSensorsButton } from './sensors/ClearSensorsButton.jsx'
 import { CoordinatorConnectionButton } from './coordinator/CoordinatorConnectionButton.jsx'
+import { QuitConfirmation } from './QuitConfirmation.jsx'
+import { QuitButton } from './QuitButton.jsx'
 
 // this is the top level component of the renderer. It is inserted into the root element
 // (a div inside <body>)
@@ -82,20 +84,21 @@ export const App: Component<Record<string, never>> = () => {
             value={{
               sensors,
               setSensors,
-            }}
-          >
+            }}>
             <div class="w-screen h-screen flex bg-base-100">
               {/* unhandled clicks in this dev will close the sidebar */}
               <div
                 class="size-full"
-                onClick={() => setSidebarContent()}
-              >
+                onClick={() => setSidebarContent()}>
                 <div class="flex flex-col size-full">
                   <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
                     <CreateSensorButton />
                     <ClearSensorsButton />
                     <CageSettingsButton setCage={setCage} />
                     <CoordinatorConnectionButton />
+                    <QuitButton
+                      onClick={() => closeAppConfirmRef?.showModal()}
+                    />
                   </div>
                   <Grid />
                 </div>
@@ -108,27 +111,8 @@ export const App: Component<Record<string, never>> = () => {
         </SidebarContext.Provider>
       </CageContext.Provider>
 
-      <dialog
-        ref={closeAppConfirmRef}
-        class="modal"
-      >
-        <div class="modal-box">
-          <h3 class="font-bold text-lg text-center">
-            Are you sure that you want to exit to desktop?
-          </h3>
-          <div class="modal-action justify-center">
-            <form method="dialog">
-              <button
-                onClick={() => window.electronAPI.closeApp()}
-                class="btn mr-2 btn-outline"
-              >
-                Yes
-              </button>
-              <button class="btn btn-outline">No</button>
-            </form>
-          </div>
-        </div>
-      </dialog>
+      {/* modal for confirming user's intent to exit app */}
+      <QuitConfirmation ref={closeAppConfirmRef} />
     </>
   )
 }
