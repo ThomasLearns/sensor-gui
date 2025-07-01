@@ -21,7 +21,7 @@ import { DragContext } from '../contexts/DragContext.js'
 // Visual indicator for a sensor and its pings
 export const Sensor: Component<{
   setSensor: SetStoreFunction<SensorData>
-  cageRef: SVGRectElement | undefined
+  getCageBoundry: undefined | (() => DOMRect)
 }> = (props) => {
   // we need grid contextual data to scale feet to screen pixels
   const grid = useContextOrThrow(GridContext)
@@ -91,10 +91,10 @@ export const Sensor: Component<{
 
   // drag and drop the sensor
   function drag(event: MouseEvent) {
-    if (props.cageRef === undefined) return
+    if (props.getCageBoundry === undefined) return
 
     // used to compare mouse position with cage
-    const boundingRect = props.cageRef.getBoundingClientRect()
+    const boundingRect = props.getCageBoundry()
 
     // set position of sensor based on mouse position
     props.setSensor(

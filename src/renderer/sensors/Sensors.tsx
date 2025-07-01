@@ -69,7 +69,11 @@ export const Sensors: Component<{}> = () => {
               }}
             >
               <Sensor
-                cageRef={rectRef}
+                getCageBoundry={
+                  rectRef !== undefined
+                    ? () => rectRef.getBoundingClientRect()
+                    : undefined
+                }
                 setSensor={createStore(sensor)[1]}
               />
             </SensorContext.Provider>
