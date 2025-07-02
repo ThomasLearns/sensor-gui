@@ -28,7 +28,7 @@ export const Graph: Component<{
   // rendering the scene
   let threeContainer: undefined | HTMLDivElement
   const scene = new Scene()
-  const camera = new OrthographicCamera(0, cage.length, cage.width, 0, -1, 1)
+  const camera = new OrthographicCamera(0, cage.length, cage.width, 0, -3, 1)
   camera.position.set(0, 0, 0)
 
   // use the max range to determine the size of the fustrum
@@ -92,7 +92,17 @@ export const Graph: Component<{
   // rerender when needed at most once per animation frame
   function renderLoop() {
     if (rerenderNeeded) {
+      // render layer 0
+      camera.layers.set(0)
+      renderer.autoClear = true
       renderer.render(scene, camera)
+
+      // render layer 1 (pings)
+      renderer.clearDepth()
+      camera.layers.set(1)
+      renderer.autoClear = false
+      renderer.render(scene, camera)
+
       rerenderNeeded = false
     }
 

@@ -42,15 +42,21 @@ export const ConicalBeamPing: Component<{
   )
   // mesh of ping for rendering
   const pingMesh = new Mesh(pingGeometry, ownedMaterial)
+  pingMesh.renderOrder = 0
+  // use layer 1 for pings
+  pingMesh.layers.set(1)
 
   // when perpendicular to camera, ping is very thin. We render the border of it
   // with a thicker line to compensate.
   // get border of ping geometary
-  const pingEdgeGeometry = new EdgesGeometry(pingGeometry)
+  const pingEdgeGeometry = new EdgesGeometry(pingGeometry, 45)
   const pingEdgeSegments = new LineSegments2(
     new LineSegmentsGeometry().fromEdgesGeometry(pingEdgeGeometry),
     ownedLineMaterial
   )
+  pingEdgeSegments.renderOrder = 1
+  // use layer 1 for pings
+  pingEdgeSegments.layers.set(1)
 
   // calculate the rotation of the sensor so the ping parts can be rotated identically
   const getSensorQuaternion = createMemo(() =>
@@ -69,17 +75,21 @@ export const ConicalBeamPing: Component<{
     // get the rotation of the sensor
     const rotation = getSensorQuaternion()
 
-    // set position, scale, rotation for ping
-    pingMesh.position.set(sensor.data.xFeet, sensor.data.yFeet, 0)
+    // set position, scale, rotation, opacity for ping
+    pingMesh.position.set(sensor.data.xFeet, sensor.data.yFeet, -2)
     pingMesh.scale.set(props.distance, props.distance, props.distance)
     pingMesh.quaternion.copy(rotation)
     pingMesh.updateMatrixWorld()
+    pingMesh.material.opacity = getOpacity()
+    pingMesh.material.needsUpdate = true
 
-    // set position, scale, and rotation for ping's border
-    pingEdgeSegments.position.set(sensor.data.xFeet, sensor.data.yFeet, 0)
+    // set position, scale, rotation, opacity for ping's border
+    pingEdgeSegments.position.set(sensor.data.xFeet, sensor.data.yFeet, -2)
     pingEdgeSegments.scale.set(props.distance, props.distance, props.distance)
     pingEdgeSegments.quaternion.copy(rotation)
     pingEdgeSegments.updateMatrixWorld()
+    pingEdgeSegments.material.opacity = getOpacity()
+    pingEdgeSegments.material.needsUpdate = true
 
     // queue render
     graphing.requestRender()
@@ -112,7 +122,7 @@ export const ConicalBeamPing: Component<{
     // commented out due to performance reasons
     // its fully functional, but for multiple sensors it can
     // get laggy. Re-enable when threejs parts of program have better performance
-    // setOpacity(1 - Math.pow(progress, 2)) // use the ease-in function t^2
+    setOpacity(1 - Math.pow(progress, 2)) // use the ease-in function t^2
 
     // tell parent ping is finished if animation done
     if (Math.abs(1 - progress) <= Number.EPSILON) {
@@ -126,19 +136,6 @@ export const ConicalBeamPing: Component<{
 
   // start animating fade
   fadeOut(performance.now())
-
-  // apply the material to the ping brush
-  // const getPingBrush = createMemo(() => {
-  //   // update ping brush
-  //   const currentPingBrush = getRawPingBrush().brush
-  //   currentPingBrush.material = ownedMaterial
-  //   currentPingBrush.material.opacity = getOpacity()
-  //   currentPingBrush.material.needsUpdate = true
-
-  //   // use a wrapper to force the reference to change
-  //   // so that dependents will re-evaluate
-  //   return { brush: currentPingBrush }
-  // })
 
   return <></>
 }
