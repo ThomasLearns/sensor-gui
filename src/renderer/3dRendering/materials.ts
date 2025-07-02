@@ -1,5 +1,5 @@
 import { formatHex, oklch } from 'culori'
-import { Color, FrontSide, MeshBasicMaterial } from 'three'
+import { Color, DoubleSide, FrontSide, MeshBasicMaterial } from 'three'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
 export const beamMaterial = new MeshBasicMaterial({
@@ -34,7 +34,7 @@ export const pingMaterial = new MeshBasicMaterial({
   depthTest: false,
   depthWrite: false,
 
-  side: FrontSide,
+  side: DoubleSide,
 })
 
 // ping color, but a line material for when this type is needed
