@@ -3,25 +3,21 @@ import {
   createEffect,
   createMemo,
   createSignal,
-  on,
   onCleanup,
   onMount,
 } from 'solid-js'
 import { GraphingContext } from '../../contexts/GraphingContext.js'
 import { useContextOrThrow } from '../../../util/useContextOrThrow.js'
-import { Brush, INTERSECTION, SUBTRACTION } from 'three-bvh-csg'
 import { SensorContext } from '../../contexts/SensorContext.js'
-import { metersPerFoot } from '../../../util/mathConstants.js'
 import { clamp } from 'three/src/math/MathUtils.js'
-import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool.js'
-import { pingMaterial } from '../../3dRendering/materials.js'
-import { csgEvaluator } from '../../3dRendering/evaluator.js'
+import { pingLineMaterial, pingMaterial } from '../../3dRendering/materials.js'
+import { EdgesGeometry, Mesh, Quaternion, SphereGeometry, Vector3 } from 'three'
+import { LineSegments2 } from 'three/addons/lines/LineSegments2.js'
+import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js'
 
-const pingWidth = 0.1 // feet
 const fadeDuration = 500 // milliseconds
 
 export const ConicalBeamPing: Component<{
-  coneBrush: Brush
   distance: number
   finish: () => unknown
 }> = (props) => {
@@ -29,79 +25,81 @@ export const ConicalBeamPing: Component<{
   const sensor = useContextOrThrow(SensorContext)
   const graphing = useContextOrThrow(GraphingContext)
 
+  // copies of materials (so that we can mess with them)
   const ownedMaterial = pingMaterial.clone()
+  const ownedLineMaterial = pingLineMaterial.clone()
 
-  // the outer sphere - the inner sphere forms a thin hollow sphere that
-  // we can intersect with the cone to get a ping indicator
-  const outerSphereBrush = borrowBrush(ownedMaterial, { type: 'sphere' })
-  const innerSphereBrush = borrowBrush(ownedMaterial, { type: 'sphere' })
+  // geometry of ping. it is a circular portion of a sphere's shell
+  const pingGeometry = new SphereGeometry(
+    1, // radius 1 means easy to scale
+    32, // default
+    16, // default
+    0, // default
+    Math.PI * 2, // default
+    0, // default
+    // theta length. Angle of "circular" cutout of sphere
+    (sensor.data.measuringAngle * Math.PI) / 2 / 180
+  )
+  // mesh of ping for rendering
+  const pingMesh = new Mesh(pingGeometry, ownedMaterial)
 
-  // create the brush and mesh for the ping
-  let pingBrush: Brush
+  // when perpendicular to camera, ping is very thin. We render the border of it
+  // with a thicker line to compensate.
+  // get border of ping geometary
+  const pingEdgeGeometry = new EdgesGeometry(pingGeometry)
+  const pingEdgeSegments = new LineSegments2(
+    new LineSegmentsGeometry().fromEdgesGeometry(pingEdgeGeometry),
+    ownedLineMaterial
+  )
+
+  // calculate the rotation of the sensor so the ping parts can be rotated identically
+  const getSensorQuaternion = createMemo(() =>
+    new Quaternion().setFromUnitVectors(
+      new Vector3(0, 1, 0),
+      new Vector3(
+        Math.sin(sensor.calculate.phi()) * Math.cos(sensor.calculate.theta()),
+        Math.sin(sensor.calculate.phi()) * Math.sin(sensor.calculate.theta()),
+        Math.cos(sensor.calculate.phi())
+      ).normalize()
+    )
+  )
+
+  // keep ping updated with changes to sensor
+  createEffect(() => {
+    // get the rotation of the sensor
+    const rotation = getSensorQuaternion()
+
+    // set position, scale, rotation for ping
+    pingMesh.position.set(sensor.data.xFeet, sensor.data.yFeet, 0)
+    pingMesh.scale.set(props.distance, props.distance, props.distance)
+    pingMesh.quaternion.copy(rotation)
+    pingMesh.updateMatrixWorld()
+
+    // set position, scale, and rotation for ping's border
+    pingEdgeSegments.position.set(sensor.data.xFeet, sensor.data.yFeet, 0)
+    pingEdgeSegments.scale.set(props.distance, props.distance, props.distance)
+    pingEdgeSegments.quaternion.copy(rotation)
+    pingEdgeSegments.updateMatrixWorld()
+
+    // queue render
+    graphing.requestRender()
+  })
 
   onMount(() => {
     // add the ping to the canvas
-    graphing.scene.add(getPingBrush().brush)
+    graphing.scene.add(pingMesh)
+    graphing.scene.add(pingEdgeSegments)
+
+    graphing.requestRender()
+
     onCleanup(() => {
       // cleanup ping
-      graphing.scene.remove(pingBrush)
-
-      // return borrowed brushes
-      releaseBrush(outerSphereBrush)
-      releaseBrush(innerSphereBrush)
+      graphing.scene.remove(pingMesh)
+      graphing.scene.remove(pingEdgeSegments)
 
       // rerender now that ping is removed
       graphing.requestRender()
     })
-  })
-
-  // generate the outer sphere centered on the sensor, with
-  // a radius slightly larger than the ping distance
-  const getOuterSphereBrush = createMemo(() => {
-    // scale to be slightly larger than the ping distance
-    outerSphereBrush.scale.set(
-      Math.min(
-        props.distance + pingWidth,
-        sensor.data.maxRange / metersPerFoot
-      ),
-      Math.min(
-        props.distance + pingWidth,
-        sensor.data.maxRange / metersPerFoot
-      ),
-      Math.min(props.distance + pingWidth, sensor.data.maxRange / metersPerFoot)
-    )
-    // move to the sensor
-    outerSphereBrush.position.set(sensor.data.xFeet, sensor.data.yFeet, 0)
-
-    // update and return
-    outerSphereBrush.updateMatrixWorld()
-    return outerSphereBrush
-  })
-
-  // generate the inner sphere centered on the sensor, with
-  // a radius slightly smaller than the ping distance
-  const getInnerSphereBrush = createMemo(() => {
-    // scale to be slightly smaller than the ping distance
-    innerSphereBrush.scale.set(
-      Math.max(props.distance - pingWidth, 0),
-      Math.max(props.distance - pingWidth, 0),
-      Math.max(props.distance - pingWidth, 0)
-    )
-    // move to the sensor
-    innerSphereBrush.position.set(sensor.data.xFeet, sensor.data.yFeet, 0)
-
-    // update and return
-    innerSphereBrush.updateMatrixWorld()
-    return innerSphereBrush
-  })
-
-  const getRingBrush = createMemo(() => {
-    const ring = csgEvaluator.evaluate(
-      getOuterSphereBrush(),
-      getInnerSphereBrush(),
-      SUBTRACTION
-    )
-    return ring
   })
 
   // fade the ping out over time
@@ -129,47 +127,18 @@ export const ConicalBeamPing: Component<{
   // start animating fade
   fadeOut(performance.now())
 
-  const getRawPingBrush = createMemo(() => {
-    if (pingBrush) {
-      // if the brush already exists, just update it
-      csgEvaluator.evaluate(
-        getRingBrush(),
-        props.coneBrush,
-        INTERSECTION,
-        pingBrush
-      )
-    } else {
-      // if the brush doesn't exist, create it
-      pingBrush = csgEvaluator.evaluate(
-        getRingBrush(),
-        props.coneBrush,
-        INTERSECTION
-      )
-    }
-
-    pingBrush.updateMatrixWorld()
-    return { brush: pingBrush }
-  })
-
   // apply the material to the ping brush
-  const getPingBrush = createMemo(() => {
-    // update ping brush
-    const currentPingBrush = getRawPingBrush().brush
-    currentPingBrush.material = ownedMaterial
-    currentPingBrush.material.opacity = getOpacity()
-    currentPingBrush.material.needsUpdate = true
+  // const getPingBrush = createMemo(() => {
+  //   // update ping brush
+  //   const currentPingBrush = getRawPingBrush().brush
+  //   currentPingBrush.material = ownedMaterial
+  //   currentPingBrush.material.opacity = getOpacity()
+  //   currentPingBrush.material.needsUpdate = true
 
-    // use a wrapper to force the reference to change
-    // so that dependents will re-evaluate
-    return { brush: currentPingBrush }
-  })
-
-  createEffect(
-    on(getPingBrush, () => {
-      // render
-      graphing.requestRender()
-    })
-  )
+  //   // use a wrapper to force the reference to change
+  //   // so that dependents will re-evaluate
+  //   return { brush: currentPingBrush }
+  // })
 
   return <></>
 }

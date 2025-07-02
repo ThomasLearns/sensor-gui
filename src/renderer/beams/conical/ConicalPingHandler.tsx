@@ -78,7 +78,6 @@ export const ConicalPingHandler: Component<{
           <>
             <ConicalBeamPing
               distance={ping.distance}
-              coneBrush={props.coneBrush}
               finish={() =>
                 setPingsData(
                   'pings',

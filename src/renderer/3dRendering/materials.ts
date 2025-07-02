@@ -1,5 +1,6 @@
 import { formatHex, oklch } from 'culori'
 import { Color, FrontSide, MeshBasicMaterial } from 'three'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
 export const beamMaterial = new MeshBasicMaterial({
   color: new Color(
@@ -34,4 +35,18 @@ export const pingMaterial = new MeshBasicMaterial({
   depthWrite: false,
 
   side: FrontSide,
+})
+
+// ping color, but a line material for when this type is needed
+export const pingLineMaterial = new LineMaterial({
+  linewidth: 3,
+  color: new Color(
+    formatHex(
+      oklch(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-accent')
+          .trim()
+      )
+    )
+  ),
 })
