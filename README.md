@@ -111,10 +111,3 @@ It uses **tailwindcss** for css classes and **daisyui** for ui primitives and th
 To run the application in dev mode, use `npm run start`.
 
 To build the application into `out/` run `npm run make`.
-
-### Known Issues
-
-- Trying to move or rotate a sensor that is actively rendering pings is laggy.
-  - Solution 1: Move ping rendering to web workers.
-  - Solution 2: Stop ping rendering while sensors are being moved or rotated.
-  - Workaround: Use the connection menu to disconnect the coordinator while moving a sensor that is active.

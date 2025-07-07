@@ -92,15 +92,6 @@ export const Graph: Component<{
   // rerender when needed at most once per animation frame
   function renderLoop() {
     if (rerenderNeeded) {
-      // render layer 0
-      camera.layers.set(0)
-      renderer.autoClear = true
-      renderer.render(scene, camera)
-
-      // render layer 1 (pings)
-      renderer.clearDepth()
-      camera.layers.set(1)
-      renderer.autoClear = false
       renderer.render(scene, camera)
 
       rerenderNeeded = false

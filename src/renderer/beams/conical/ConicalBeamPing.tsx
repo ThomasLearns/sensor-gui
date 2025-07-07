@@ -43,8 +43,6 @@ export const ConicalBeamPing: Component<{
   // mesh of ping for rendering
   const pingMesh = new Mesh(pingGeometry, ownedMaterial)
   pingMesh.renderOrder = 0
-  // use layer 1 for pings
-  pingMesh.layers.set(1)
 
   // when perpendicular to camera, ping is very thin. We render the border of it
   // with a thicker line to compensate.
@@ -55,8 +53,6 @@ export const ConicalBeamPing: Component<{
     ownedLineMaterial
   )
   pingEdgeSegments.renderOrder = 1
-  // use layer 1 for pings
-  pingEdgeSegments.layers.set(1)
 
   // calculate the rotation of the sensor so the ping parts can be rotated identically
   const getSensorQuaternion = createMemo(() =>
