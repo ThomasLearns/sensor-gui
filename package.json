@@ -40,10 +40,11 @@
     "eslint-plugin-import": "^2.31.0",
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4",
-    "vite": "^5.4.19",
+    "vite": "^7.1.2",
     "vite-plugin-solid": "^2.11.6"
   },
   "dependencies": {
+    "@serialport/parser-slip-encoder": "^13.0.0",
     "@tailwindcss/vite": "^4.1.5",
     "culori": "^4.0.1",
     "d3": "^7.9.0",
