@@ -1,6 +1,6 @@
-import { SerialPort, SlipDecoder, SlipEncoder } from "serialport"
-import { devices, pushDeviceListToRenderer } from "./initializeSerial"
-import { sendDataRequest, setupDataHandlers } from "./pingHandling"
+import { SerialPort, SlipDecoder, SlipEncoder } from 'serialport'
+import { devices, pushDeviceListToRenderer } from './initializeSerial'
+import { sendDataRequest, setupDataHandlers } from './pingHandling'
 
 // must be the same as the baud rate set on the coordinator
 const baudRate = 115200
@@ -15,7 +15,7 @@ const handshakeTimeout = 5000
 export const handshakeIndicator = 0x06
 
 // disconnect a device (if it is connected)
-export function closeDevice(path: string) {
+export function closeDevice(path: string, port?: SerialPort) {
   // look for a device matching the path
   const device = devices.get(path)
 
@@ -23,6 +23,13 @@ export function closeDevice(path: string) {
   if (device?.connected) {
     device.port.close()
     device.port.destroy()
+  }
+
+  // if there is an associated port (used when the connection didn't complete before failing)
+  // close the port
+  if (port !== undefined) {
+    port.close()
+    port.destroy()
   }
 
   // if the device is a real device plugged in, set its entry
@@ -124,22 +131,31 @@ function savePort(port: SerialPort) {
 
 // try to connect to a device
 export async function connectToCoordinator(path: string) {
-  // open a port
-  const port = await setupCoordinatorPort(path)
-  const { readParser, writeParser } = createSlipParsers(port)
+  let port: SerialPort | undefined
+ 
+  try {
+    // open a port
+    port = await setupCoordinatorPort(path)
+    
+    const { readParser, writeParser } = createSlipParsers(port)
+    
+    // complete a handshake
+    await handshake(readParser, writeParser)
 
-  // complete a handshake
-  await handshake(readParser, writeParser)
+    // listen and handle packets from device
+    setupDataHandlers(readParser, writeParser)
 
-  // listen and handle packets from device
-  setupDataHandlers(readParser, writeParser)
+    // mark device as saved
+    savePort(port)
 
-  // mark device as saved
-  savePort(port)
+    // start communication by sending first data request
+    sendDataRequest(writeParser)
 
-  // start communication by sending first data request
-  sendDataRequest(writeParser)
-
-  // update renderer with most up-to-date list of device statuses
-  pushDeviceListToRenderer()
+    // update renderer with most up-to-date list of device statuses
+    pushDeviceListToRenderer()
+  } catch (error) {
+    // close the device and cleanup due to failure
+    closeDevice(path, port)
+    throw error
+  }
 }
