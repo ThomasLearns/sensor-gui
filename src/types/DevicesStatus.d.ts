@@ -1,4 +1,4 @@
-import { SerialPort, ReadlineParser } from 'serialport'
+import { SerialPort, ReadlineParser, SlipDecoder } from 'serialport'
 
 // used in the renderer to see which devices are connected
 export type DeviceConnections = {
@@ -10,7 +10,7 @@ type BaseDevice = {
   portInfo: PortInfo
   connected: boolean
   port?: SerialPort
-  parser?: ReadlineParser
+  parser?: SlipDecoder
 }
 
 // a device with specied required fields
