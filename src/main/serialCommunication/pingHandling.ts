@@ -1,5 +1,6 @@
-import { SlipDecoder, SlipEncoder } from "serialport"
-import { handshakeIndicator } from "./connectCoordinator"
+import { SlipDecoder, SlipEncoder } from 'serialport'
+import { handshakeIndicator } from './connectCoordinator'
+import { sendPing } from './initializeSerial'
 
 // byte used to indicate an ASCII message for debug
 const debugPacketIndicator = 0x00
@@ -20,7 +21,10 @@ export function sendDataRequest(writeParser: SlipEncoder) {
 }
 
 // listen to and handle packets from the connected device
-export function setupDataHandlers(readParser: SlipDecoder, writeParser: SlipEncoder) {
+export function setupDataHandlers(
+  readParser: SlipDecoder,
+  writeParser: SlipEncoder
+) {
   readParser.on('data', (packet: unknown) => {
     if (!Buffer.isBuffer(packet)) return
     if (packet.length < 1) return
@@ -35,8 +39,8 @@ export function setupDataHandlers(readParser: SlipDecoder, writeParser: SlipEnco
 
       case dataIndicator:
         // data packet
-        // TODO: parse data and send to renderer
-        console.log(packet)
+        // parse data and send to renderer
+        handleData(packet.subarray(1))
         break
 
       case dataDoneIndicator:
@@ -55,4 +59,38 @@ export function setupDataHandlers(readParser: SlipDecoder, writeParser: SlipEnco
         console.debug('unrecognized data from coordinator')
     }
   })
+}
+
+// byte to indicate a data packet represents distance
+// <data indicator> <distance indicator> <sensor id> <distance (2 bytes)>
+const distanceDataIndicator = 0x00
+
+function handleData(data: Buffer) {
+  if (data.length < 1) {
+    console.debug('empty data packet received')
+    return
+  }
+
+  switch (data[0]) {
+    // distance data packet
+    case distanceDataIndicator:
+      if (data.length !== 4) {
+        console.debug('malformed distance data packet received')
+        return
+      }
+
+      // send distance with sensor id to renderer
+      const sensorId = data.readUInt8(1)
+      const distance = data.readUInt16BE(2)
+      sendPing({
+        type: 'ultrasonic',
+        distance,
+        sensorId,
+      })
+
+      break
+
+    default:
+      console.debug('unrecognized data packet type')
+  }
 }

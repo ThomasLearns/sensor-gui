@@ -1,9 +1,7 @@
-// given info about a port, determine if it is connected to
-
-import { SerialPort } from "serialport"
-import { devices, pushDeviceListToRenderer } from "./initializeSerial"
-import { getErrorMessage } from "../../util/getErrorMessage"
-import { closeDevice, connectToCoordinator } from "./connectCoordinator"
+import { SerialPort } from 'serialport'
+import { devices, pushDeviceListToRenderer } from './initializeSerial'
+import { getErrorMessage } from '../../util/getErrorMessage'
+import { closeDevice, connectToCoordinator } from './connectCoordinator'
 
 // fields used to determine if a device is an Arduino Uno
 export const arduinoUnoVendorId = '2341'
