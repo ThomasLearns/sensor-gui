@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
 import { Ping } from '../../types/Pings'
 import { getErrorMessage } from '../../util/getErrorMessage'
-import { SerialPort, SlipDecoder, SlipEncoder } from 'serialport'
+import { SerialPort } from 'serialport'
 import { scanAndConnect } from './serialScanning'
 import { closeDevice, connectToCoordinator } from './connectCoordinator'
 

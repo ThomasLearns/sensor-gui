@@ -34,7 +34,7 @@ export function setupDataHandlers(
       case debugPacketIndicator:
         // debug packet
         // print out the packet's content as ASCII
-        console.debug(packet.subarray(1).toString())
+        console.debug(`[From Device]: ${packet.subarray(1).toString()}`)
         break
 
       case dataIndicator:
@@ -81,7 +81,7 @@ function handleData(data: Buffer) {
 
       // send distance with sensor id to renderer
       const sensorId = data.readUInt8(1)
-      const distance = data.readUInt16BE(2)
+      const distance = data.readUInt16LE(2)
       sendPing({
         type: 'ultrasonic',
         distance,

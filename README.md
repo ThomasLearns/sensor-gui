@@ -68,23 +68,25 @@ Distance packets will be rendered at ALL sensors where the ROUT number matches t
 
 If the sensor is configured with a vertical rotation, and the ping is calculated to have been > 0.1 ft above or below the sensor's horizontal plane, a height helper number will appear below the sensor graphic indicating the height above or below the sensor's horizontal plane of the last ping received for that sensor.
 
-Distance packets are supported in the following format where each field is seperated by a comma (`,`):
-Distance Packet Indicator | Sensor Id | Distance (cm)
----|---|---
-`1` | `int`|`int`
+Distance packets are supported in the following format:
 
-Example: `1,12,120`
+Data Packet Indicator | Data Packet Indicator | Sensor Id | Distance (cm)
+---|---|---|---
+`0x04` | `0x00` | `int8` | `int16`
+
+Example: `0x04000C003A`
 
 #### Jam Packets
 
 Jam packets will be cause pings to be repeatedly registered at all sensors matching the packet's data for the next 0.5 seconds.
 
-Jam packets are supported in the following format where each field is separated by a comma (`,`):
-Jam Packet Indicator | Jammer Id | Sensor Type | Sensor Id
----|---|---|---
-`3` | `int` | `int` | `int`
+Jam packets are supported in the following format:
 
-Example: `3,0,0,0`
+Data Packet Indicator | Jam Packet Indicator | Jammer Id | Target Sensor Type | Target Sensor Id
+---|---|---|---|---
+`0x04` | `0x01` | `int8` | `int8` | `int8`
+
+Example: `0x0401010000`
 
 The jammer id is unused by the sensor GUI.
 
