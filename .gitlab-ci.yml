@@ -1,0 +1,85 @@
+stages:
+  - build # build application
+  - release # post release with application download link
+
+variables:
+  # tells npm ci where to get cache
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+default:
+  # group runner that runs this.
+  # It being orion is important as it helps with connection to spork
+  tags:
+    - orion-runner-fusion-spork-game-of-drones-docker
+
+# build the application
+make-job:
+  image: node:22.19.0-trixie
+  stage: build
+  script:
+    # we need the zip command
+    - apt-get update
+    - apt-get install -y zip
+    # get dependencies
+    - npm ci
+    # build electron application
+    - npm run make
+  # save results for next stage
+  artifacts:
+    when: on_success
+    expire_in: 1 hour
+    paths:
+      - out/make/zip/win32/x64
+  # job runs when tag is pushed
+  rules:
+    - if: $CI_COMMIT_TAG
+  # cache dependencies between runs
+  cache:
+    policy: pull-push
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm
+
+# make a release for the built distributable
+release-job:
+  image: curlimages/curl:latest
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    # upload the distributable to the package registry
+    - |
+      curl \
+      -w "\n" \
+      --fail-with-body \
+      --show-error \
+      --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+      --upload-file "out/make/zip/win32/x64/Game of Drones Sensor GUI-win32-x64-1.0.0.zip" \
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/distributables/${CI_COMMIT_TAG}/win32x64.zip"
+    # create a release with the distributable as an asset link
+    - |
+      curl \
+      -w "\n" \
+      --fail-with-body \
+      --show-error \
+      --header 'Content-Type: application/json' \
+      --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+      --data "{
+        \"name\": \"${CI_COMMIT_TAG}\",
+        \"tag_name\": \"${CI_COMMIT_TAG}\",
+        \"ref\": \"${CI_COMMIT_REF_NAME}\",
+        \"assets\": {
+          \"links\": [
+            {
+              \"name\": \"sensor-gui-win32-x64.zip\",
+              \"url\": \"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/distributables/${CI_COMMIT_TAG}/win32x64.zip\",
+              \"link_type\": \"package\"
+            }
+          ]
+        }
+      }" \
+      --request POST "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases"
+  dependencies:
+    - make-job
