@@ -108,8 +108,25 @@ It uses **tailwindcss** for css classes and **daisyui** for ui primitives and th
 
 **Threejs** is used for 3D rendering.
 
-### Commands
+### Development
 
+#### Run
 To run the application in dev mode, use `npm run start`.
 
+#### Build
 To build the application into `out/` run `npm run make`.
+
+#### Release
+To generate a release from the last commit, do the following:
+```shell
+git tag <version>
+git push origin <version>
+```
+
+For example:
+```shell
+git tag v4.0.0
+git push origin v4.0.0
+```
+
+This should start a runner on Spork that will build the project and create a release (may take 5-10 minutes).
