@@ -1,6 +1,6 @@
 import { SlipDecoder, SlipEncoder } from 'serialport'
 import { handshakeIndicator } from './connectCoordinator'
-import { sendPing } from './initializeSerial'
+import { sendJam, sendPing } from './initializeSerial'
 
 // byte used to indicate an ASCII message for debug
 const debugPacketIndicator = 0x00
@@ -64,6 +64,9 @@ export function setupDataHandlers(
 // byte to indicate a data packet represents distance
 // <data indicator> <distance indicator> <sensor id> <distance (2 bytes)>
 const distanceDataIndicator = 0x00
+// byte to indicate a data packet represents being jammed
+// <data indicator> <jam indicator> <sensor id> <target sensor type> <target sensor id>
+const jamIndicator = 0x01
 
 function handleData(data: Buffer) {
   if (data.length < 1) {
@@ -74,23 +77,38 @@ function handleData(data: Buffer) {
   switch (data[0]) {
     // distance data packet
     case distanceDataIndicator:
-      if (data.length !== 4) {
-        console.debug('malformed distance data packet received')
-        return
+      {
+        if (data.length !== 4) {
+          console.debug('malformed distance data packet received')
+          return
+        }
+
+        // send distance with sensor id to renderer
+        const sensorId = data.readUInt8(1)
+        const distance = data.readUInt16LE(2)
+        sendPing({
+          type: 'ultrasonic',
+          distance,
+          sensorId,
+        })
       }
+      break
 
-      // send distance with sensor id to renderer
-      const sensorId = data.readUInt8(1)
-      const distance = data.readUInt16LE(2)
-      sendPing({
-        type: 'ultrasonic',
-        distance,
-        sensorId,
-      })
+    case jamIndicator:
+      {
+        if (data.length !== 4) {
+          console.debug('malformed jam data packet received')
+          return
+        }
 
+        // send jam info to renderer
+        const targetType = data.readUInt8(2)
+        const targetId = data.readUInt8(3)
+        sendJam(targetType, targetId)
+      }
       break
 
     default:
-      console.debug('unrecognized data packet type')
+      console.debug(`unrecognized data packet type ${data[0]}`)
   }
 }
