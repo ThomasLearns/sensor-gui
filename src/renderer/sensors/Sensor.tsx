@@ -103,20 +103,20 @@ export const Sensor: Component<{
       event.x <= boundingRect.left
         ? 0
         : event.x >= boundingRect.right
-        ? cage.length
-        : ((event.x - boundingRect.left) /
-            (boundingRect.right - boundingRect.left)) *
-          cage.length
+          ? cage.length
+          : ((event.x - boundingRect.left) /
+              (boundingRect.right - boundingRect.left)) *
+            cage.length,
     )
     props.setSensor('yFeet', (prev) =>
       // put on bottom or top if out of bounds, or at mouse y position (in feet) otherwise
       event.y <= boundingRect.top
         ? cage.width
         : event.y >= boundingRect.bottom
-        ? 0
-        : ((boundingRect.bottom - event.y) /
-            (boundingRect.bottom - boundingRect.top)) *
-          cage.width
+          ? 0
+          : ((boundingRect.bottom - event.y) /
+              (boundingRect.bottom - boundingRect.top)) *
+            cage.width,
     )
   }
 
@@ -130,7 +130,7 @@ export const Sensor: Component<{
     setDragging(true)
     drag(event)
     dragContext.startDrag(drag, () => {
-      console.log('drag stop')
+      // console.log('drag stop')
       setDragging(false)
       setMouseDown(false)
     })

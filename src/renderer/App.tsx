@@ -54,9 +54,9 @@ export const App: Component<Record<string, never>> = () => {
       cage.labels.reduce(
         (mostColumns, currentRow) =>
           mostColumns > currentRow.length ? mostColumns : currentRow.length,
-        0
-      )
-    )
+        0,
+      ),
+    ),
   )
 
   // the content of the sidebar
@@ -65,7 +65,7 @@ export const App: Component<Record<string, never>> = () => {
   let cleanupSidebar: () => unknown = () => {}
   function setSidebarContent(
     newElement?: JSX.Element,
-    cleanup?: () => unknown
+    cleanup?: () => unknown,
   ) {
     cleanupSidebar()
     setSidebar(newElement ?? <></>)
@@ -89,10 +89,10 @@ export const App: Component<Record<string, never>> = () => {
   // pass events to callbacks as directed while dragging
   const startDrag = (
     onDrag: (event: MouseEvent) => unknown,
-    onDragStop: (event: MouseEvent) => unknown
+    onDragStop: (event: MouseEvent) => unknown,
   ) => {
-    console.log('starting drag')
-    console.log(`Enable drag set: ${enableDrag !== undefined}`)
+    // console.log('starting drag')
+    // console.log(`Enable drag set: ${enableDrag !== undefined}`)
     setDragCallback(() => onDrag)
     setDragStopCallback(() => onDragStop)
     enableDrag?.()
@@ -107,12 +107,14 @@ export const App: Component<Record<string, never>> = () => {
               value={{
                 sensors,
                 setSensors,
-              }}>
+              }}
+            >
               <div class="w-screen h-screen flex bg-base-100">
                 {/* unhandled clicks in this dev will close the sidebar */}
                 <div
                   class="size-full"
-                  onClick={() => setSidebarContent()}>
+                  onClick={() => setSidebarContent()}
+                >
                   <div class="flex flex-col size-full">
                     <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
                       <CreateSensorButton />

@@ -23,7 +23,7 @@ export function sendDataRequest(writeParser: SlipEncoder) {
 // listen to and handle packets from the connected device
 export function setupDataHandlers(
   readParser: SlipDecoder,
-  writeParser: SlipEncoder
+  writeParser: SlipEncoder,
 ) {
   readParser.on('data', (packet: unknown) => {
     if (!Buffer.isBuffer(packet)) return
@@ -34,7 +34,7 @@ export function setupDataHandlers(
       case debugPacketIndicator:
         // debug packet
         // print out the packet's content as ASCII
-        console.debug(`[From Device]: ${packet.subarray(1).toString()}`)
+        console.debug(`${packet.subarray(1).toString()} from device:`)
         break
 
       case dataIndicator:
@@ -86,6 +86,7 @@ function handleData(data: Buffer) {
         // send distance with sensor id to renderer
         const sensorId = data.readUInt8(1)
         const distance = data.readUInt16LE(2)
+        console.debug(sensorId)
         sendPing({
           type: 'ultrasonic',
           distance,

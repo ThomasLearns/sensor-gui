@@ -38,7 +38,7 @@ export const ConicalBeamPing: Component<{
     Math.PI * 2, // default
     0, // default
     // theta length. Angle of "circular" cutout of sphere
-    (sensor.data.measuringAngle * Math.PI) / 2 / 180
+    (sensor.data.measuringAngle * Math.PI) / 2 / 180,
   )
   // mesh of ping for rendering
   const pingMesh = new Mesh(pingGeometry, ownedMaterial)
@@ -50,7 +50,7 @@ export const ConicalBeamPing: Component<{
   const pingEdgeGeometry = new EdgesGeometry(pingGeometry, 45)
   const pingEdgeSegments = new LineSegments2(
     new LineSegmentsGeometry().fromEdgesGeometry(pingEdgeGeometry),
-    ownedLineMaterial
+    ownedLineMaterial,
   )
   pingEdgeSegments.renderOrder = 1
 
@@ -61,9 +61,9 @@ export const ConicalBeamPing: Component<{
       new Vector3(
         Math.sin(sensor.calculate.phi()) * Math.cos(sensor.calculate.theta()),
         Math.sin(sensor.calculate.phi()) * Math.sin(sensor.calculate.theta()),
-        Math.cos(sensor.calculate.phi())
-      ).normalize()
-    )
+        Math.cos(sensor.calculate.phi()),
+      ).normalize(),
+    ),
   )
 
   // keep ping updated with changes to sensor
@@ -102,7 +102,13 @@ export const ConicalBeamPing: Component<{
       // cleanup ping
       graphing.scene.remove(pingMesh)
       graphing.scene.remove(pingEdgeSegments)
-
+      pingGeometry.dispose()
+      pingMesh.material.dispose()
+      pingEdgeGeometry.dispose()
+      pingEdgeSegments.material.dispose()
+      pingEdgeSegments.geometry.dispose()
+      pingMesh.parent?.remove(pingMesh)
+      pingEdgeSegments.parent?.remove(pingEdgeSegments)
       // rerender now that ping is removed
       graphing.requestRender()
     })

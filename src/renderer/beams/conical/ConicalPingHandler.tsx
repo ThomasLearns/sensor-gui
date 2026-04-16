@@ -31,7 +31,7 @@ export const ConicalPingHandler: Component<{
 
   // track hieght in feet of last ping to display to use
   const [getLastPingHeight, setLastPingHeight] = createSignal<Accessor<number>>(
-    () => 0
+    () => 0,
   )
 
   // the list of all actively displayed pings for the current sensor
@@ -48,7 +48,7 @@ export const ConicalPingHandler: Component<{
 
       // save the height to be displayed to the user seperately
       setLastPingHeight(() =>
-        createMemo(() => feet * Math.cos(sensor.calculate.phi()))
+        createMemo(() => feet * Math.cos(sensor.calculate.phi())),
       )
       // reset the ping height opacity
       fadeStartTime = performance.now()
@@ -57,7 +57,7 @@ export const ConicalPingHandler: Component<{
     })
   })
 
-  createEffect(() => console.log(grid.getOnTopMount()))
+  // createEffect(() => console.log(grid.getOnTopMount()))
 
   const [getHeightOpacity, setHeightOpacity] = createSignal(1)
 
@@ -81,7 +81,7 @@ export const ConicalPingHandler: Component<{
               finish={() =>
                 setPingsData(
                   'pings',
-                  pinsData.pings.filter((_, index) => index !== getIndex())
+                  pinsData.pings.filter((_, index) => index !== getIndex()),
                 )
               }
             />

@@ -17,7 +17,7 @@ export const Sensors: Component<{}> = () => {
     sensors.sensors
       .filter(
         (sensor) =>
-          sensor.type === ping.type && sensor.routNumber === ping.sensorId
+          sensor.type === ping.type && sensor.routNumber === ping.sensorId,
       )
       .forEach((sensor) => sensor.getPingHandler()?.(ping.distance))
   })
@@ -27,12 +27,12 @@ export const Sensors: Component<{}> = () => {
       .filter(
         (sensor) =>
           (typeId === 0 || sensor.sensorTypeId === typeId) &&
-          (sensorId === 0 || sensor.routNumber === sensorId)
+          (sensorId === 0 || sensor.routNumber === sensorId),
       )
       .forEach((sensor) =>
         sensor.getPingHandler()?.(
-          Math.round(Math.random() * sensor.maxRange * 100)
-        )
+          Math.round(Math.random() * sensor.maxRange * 100),
+        ),
       )
   })
 
@@ -60,10 +60,10 @@ export const Sensors: Component<{}> = () => {
                 index: index,
                 calculate: {
                   theta: createMemo(
-                    () => (sensor.horizontalAngle * Math.PI) / 180
+                    () => (sensor.horizontalAngle * Math.PI) / 180,
                   ),
                   phi: createMemo(
-                    () => ((-sensor.verticalAngle + 90) * Math.PI) / 180
+                    () => ((-sensor.verticalAngle + 90) * Math.PI) / 180,
                   ),
                 },
               }}
