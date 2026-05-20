@@ -18,6 +18,9 @@ import { Brush } from 'three-bvh-csg'
 import { Portal } from 'solid-js/web'
 import { clamp } from 'three/src/math/MathUtils.js'
 
+// Time to consider a sensor connected after receiving data (milliseconds)
+const CONNECTION_TIMEOUT = 1000
+
 // display pings for a conical beam
 export const ConicalPingHandler: Component<{
   coneBrush: Brush
@@ -41,10 +44,25 @@ export const ConicalPingHandler: Component<{
     pings: [],
   })
 
+  // Set up ping handler to track connection status
   sensor.data.setPingHandler(() => (centimeters: number) => {
     runWithOwner(owner, () => {
       const meters = centimeters / 100
       const feet = meters / metersPerFoot
+
+      // Mark sensor as connected
+      sensor.data.setIsConnected(true)
+
+      // Clear any pending disconnection timeout
+      if (disconnectTimeoutId !== null) {
+        clearTimeout(disconnectTimeoutId)
+      }
+
+      // Schedule disconnection if no new data arrives
+      disconnectTimeoutId = window.setTimeout(() => {
+        sensor.data.setIsConnected(false)
+        disconnectTimeoutId = null
+      }, CONNECTION_TIMEOUT)
 
       // save the height to be displayed to the user seperately
       setLastPingHeight(() =>
@@ -56,6 +74,8 @@ export const ConicalPingHandler: Component<{
       setPingsData('pings', pinsData.pings.length, { distance: feet })
     })
   })
+
+  let disconnectTimeoutId: number | null = null
 
   // createEffect(() => console.log(grid.getOnTopMount()))
 
@@ -98,14 +118,9 @@ export const ConicalPingHandler: Component<{
             x={`${grid.getXScale()(sensor.data.xFeet)}px`}
             y={`${grid.getYScale()(sensor.data.yFeet) + 24}px`}
             text-anchor="middle"
-            z-index="1000"
             opacity={getHeightOpacity()}
           >
-            {Math.round(Math.abs(getLastPingHeight()() * 10)) / 10 !== 0
-              ? `${
-                  getLastPingHeight()() > 0 ? '+' : ''
-                }${getLastPingHeight()().toFixed(1)}ft`
-              : ''}
+            {getLastPingHeight()().toFixed(1)}ft
           </text>
         </g>
       </Portal>

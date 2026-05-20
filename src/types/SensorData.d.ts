@@ -8,8 +8,12 @@ interface SpecificSensor {
   // network reference sensors by id number, so we need to keep it
   sensorTypeId: number // unique identifier for the sensor type
 
-  getPingHandler: Accessor<undefined | ((...args: unknown[]) => void)>
-  setPingHandler: Setter<undefined | ((...args: unknown[]) => void)>
+  getPingHandler: Accessor<undefined | ((distance: number) => void)>
+  setPingHandler: Setter<undefined | ((distance: number) => void)>
+  
+  // Track connection status
+  getIsConnected: Accessor<boolean>
+  setIsConnected: Setter<boolean>
 }
 
 // information needed to describe an ultrasonic sensor
@@ -22,6 +26,9 @@ export type UltrasonicData = SpecificSensor & {
 
   getPingHandler: Accessor<undefined | ((distance: number) => void)>
   setPingHandler: Setter<undefined | ((distance: number) => void)>
+  
+  getIsConnected: Accessor<boolean>
+  setIsConnected: Setter<boolean>
 }
 
 // union of all sensor types

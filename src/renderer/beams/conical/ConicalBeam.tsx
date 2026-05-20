@@ -14,13 +14,24 @@ import { Brush, INTERSECTION } from 'three-bvh-csg'
 import { GraphingContext } from '../../contexts/GraphingContext.js'
 import { ConicalPingHandler } from './ConicalPingHandler.jsx'
 import { borrowBrush, releaseBrush } from '../../3dRendering/pools/brushPool.js'
-import { beamMaterial } from '../../3dRendering/materials.js'
+import { createBeamMaterial, BEAM_COLOR_CONNECTED, BEAM_COLOR_DISCONNECTED } from '../../3dRendering/materials.js'
 import { csgEvaluator } from '../../3dRendering/evaluator.js'
 
 // display a conical beam using a sensor's properties
 export const ConicalBeam: Component = () => {
   const graphing = useContextOrThrow(GraphingContext)
   const sensor = useContextOrThrow(SensorContext)
+
+  // Create a material that will be updated based on connection status
+  const beamMaterial = createBeamMaterial(BEAM_COLOR_DISCONNECTED)
+
+  // Update material color when connection status changes
+  createEffect(() => {
+    const isConnected = sensor.data.getIsConnected()
+    beamMaterial.color.copy(isConnected ? BEAM_COLOR_CONNECTED : BEAM_COLOR_DISCONNECTED)
+    beamMaterial.needsUpdate = true
+    graphing.requestRender()
+  })
 
   // the beam is made up of the intersection of a sphere and a cone
   // the sphere uses the sensor's max range as its radius, and the cone
@@ -29,7 +40,6 @@ export const ConicalBeam: Component = () => {
   // create the sphere, and maintain its position, scale, etc
   // use 1 as the base radius of the sphere so we can scale it to other radiuses easily
   const sphereBrush = borrowBrush(beamMaterial, { type: 'sphere' })
-  // const sphereBrush = new Brush(new SphereGeometry(1), beamMaterial)
   const getSphereBrush = createMemo(() => {
     // set the radius by scaling the sphere up (or down)
     sphereBrush.scale.set(
@@ -102,6 +112,7 @@ export const ConicalBeam: Component = () => {
       graphing.requestRender()
       releaseBrush(coneBrush)
       releaseBrush(sphereBrush)
+      beamMaterial.dispose()
     })
   })
 

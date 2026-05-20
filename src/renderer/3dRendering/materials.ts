@@ -12,19 +12,22 @@ import {
 } from 'three'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
-export const beamMaterial = new MeshBasicMaterial({
-  color: new Color(
-    formatHex(
-      oklch(
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-secondary')
-          .trim()
-      )
-    )
-  ),
-  opacity: 0.2,
-  transparent: true,
-})
+// Color constants for beam states
+export const BEAM_COLOR_CONNECTED = new Color(0x00ff00) // Green when connected
+export const BEAM_COLOR_DISCONNECTED = new Color(0xff0000) // Red when disconnected
+const BEAM_OPACITY = 0.2
+
+// Create a beam material with a specific color
+export function createBeamMaterial(color: Color): MeshBasicMaterial {
+  return new MeshBasicMaterial({
+    color: color.clone(),
+    opacity: BEAM_OPACITY,
+    transparent: true,
+  })
+}
+
+// Default beam material (kept for backward compatibility)
+export const beamMaterial = createBeamMaterial(BEAM_COLOR_DISCONNECTED)
 
 // get the accent color from the css
 const accentColor = new Color(

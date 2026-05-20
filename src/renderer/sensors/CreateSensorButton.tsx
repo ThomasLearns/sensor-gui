@@ -15,6 +15,7 @@ export const CreateSensorButton: Component<{}> = () => {
     const [pingHandler, setPingHandler] = createSignal<
       undefined | ((centimeters: number) => void)
     >()
+    const [getIsConnected, setIsConnected] = createSignal(false)
     const newSensor: SensorData = {
       xFeet: 0,
       yFeet: 0,
@@ -28,6 +29,8 @@ export const CreateSensorButton: Component<{}> = () => {
       getPingHandler: pingHandler,
       setPingHandler,
       sensorTypeId: 1,
+      getIsConnected,
+      setIsConnected,
     }
 
     sensors.setSensors(sensors.sensors.length, newSensor)
