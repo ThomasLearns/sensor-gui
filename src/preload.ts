@@ -21,4 +21,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   closeApp: () => ipcRenderer.send('close'),
   onJam: (callback: (typeId: number, sensorId: number) => unknown) =>
     ipcRenderer.on('jam', (_, typeId, sensorId) => callback(typeId, sensorId)),
+  toggleMockSensors: (enabled: boolean) =>
+    ipcRenderer.invoke('toggle-mock-sensors', enabled), 
 })

@@ -1,9 +1,10 @@
-import { BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { Ping } from '../../types/Pings'
 import { getErrorMessage } from '../../util/getErrorMessage'
-import { SerialPort } from 'serialport'
+import { SerialPort, SlipDecoder, SlipEncoder } from 'serialport'
 import { scanAndConnect } from './serialScanning'
 import { closeDevice, connectToCoordinator } from './connectCoordinator'
+import { UltrasonicSensorsMock } from './UltrasonicSensorsMock'
 
 export let sendPing: (ping: Ping) => void
 export let sendJam: (typeId: number, sensorId: number) => void
@@ -31,8 +32,8 @@ export function initializeSerial(mainWindow: BrowserWindow) {
           ...accumulator,
           [path]: connected,
         }),
-        {}
-      )
+        {},
+      ),
     )
   }
 
@@ -44,7 +45,7 @@ export function initializeSerial(mainWindow: BrowserWindow) {
   // with true if it works
   ipcMain.handle(
     'try-set-connection',
-    (_event: IpcMainEvent, path: string, connect: boolean) =>
+    (_event: IpcMainInvokeEvent, path: string, connect: boolean) =>
       // set the connection of the target path
       new Promise<true | string>(async (resolve) => {
         try {
@@ -69,8 +70,46 @@ export function initializeSerial(mainWindow: BrowserWindow) {
 
         // success
         resolve(true)
-      })
+      }),
   )
+  // Track the active mock instance
+  let activeMockSensors: UltrasonicSensorsMock | null = null
+
+  ipcMain.handle('toggle-mock-sensors', async (event, enabled: boolean) => {
+    try {
+      console.log(`Toggle mock sensors: ${enabled}`)
+      console.log(`Connected devices: ${devices.size}`)
+      
+      if (enabled) {
+        if (activeMockSensors?.isSimulationRunning()) {
+          return { success: false, message: 'Mock sensors already running' }
+        }
+
+        for (const [path, device] of devices.entries()) {
+          console.log(`Device ${path}: connected=${device.connected}, hasReadParser=${!!(device as any).readParser}`)
+          
+          if (device.connected && (device as any).readParser) {
+            activeMockSensors = new UltrasonicSensorsMock()
+            activeMockSensors.setReadParser((device as any).readParser)
+            activeMockSensors.startSimulation()
+            console.log('Mock sensors enabled')
+            return { success: true, message: 'Mock sensors enabled' }
+          }
+        }
+        return { success: false, message: `No connected device found (${devices.size} devices total)` }
+      } else {
+        if (activeMockSensors) {
+          activeMockSensors.stopSimulation()
+          activeMockSensors = null
+          console.log('Mock sensors disabled')
+        }
+        return { success: true, message: 'Mock sensors disabled' }
+      }
+    } catch (error) {
+      console.error('Mock toggle error:', error)
+      return { success: false, message: getErrorMessage(error) }
+    }
+  })
 }
 
 // keep track of devices plugged in, and whether
@@ -84,5 +123,7 @@ export const devices = new Map<
   | {
       connected: true
       port: SerialPort
+      writeParser: SlipEncoder
+      readParser: SlipDecoder
     }
 >()

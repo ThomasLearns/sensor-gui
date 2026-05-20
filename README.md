@@ -113,6 +113,16 @@ It uses **tailwindcss** for css classes and **daisyui** for ui primitives and th
 #### Run
 To run the application in dev mode, use `npm run start`.
 
+#### Run
+After running the application in dev mode, with the DevTools opened, add a few sensors and in Console, run:
+```
+window.electron.ipcRenderer.invoke('toggle-mock-sensors', true)
+```
+
+to see them start sending data, to disable: 
+```
+window.electron.ipcRenderer.invoke('toggle-mock-sensors', false)
+```
 #### Build
 To build the application into `out/` run `npm run make`.
 

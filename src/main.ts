@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
+import { app, BrowserWindow, ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron'
 import path from 'node:path'
 import started from 'electron-squirrel-startup'
 import { initializeSerial } from './main/serialCommunication/initializeSerial'
@@ -34,7 +34,7 @@ const createWindow = () => {
   ipcMain.on('close', () => mainWindow.close())
 
   initializeSerial(mainWindow)
-  ipcMain.handle('save-cage', async (event: IpcMainEvent, cage: CageData) => {
+  ipcMain.handle('save-cage', async (event: IpcMainInvokeEvent , cage: CageData) => {
     try {
       writeFileSync(
         path.join(app.getPath('appData'), 'god-sensor-cage-config.json'),
@@ -50,7 +50,7 @@ const createWindow = () => {
   })
   ipcMain.handle(
     'load-cage',
-    async (event: IpcMainEvent): Promise<CageData | null> => {
+    async (event: IpcMainInvokeEvent ): Promise<CageData | null> => {
       try {
         const rawData = readFileSync(
           path.join(app.getPath('appData'), 'god-sensor-cage-config.json'),

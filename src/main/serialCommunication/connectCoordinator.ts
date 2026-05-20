@@ -122,10 +122,12 @@ async function handshake(readParser: SlipDecoder, writeParser: SlipEncoder) {
 
 // add/change an entry in the device list to be a connected
 // entry with the port included
-function savePort(port: SerialPort) {
+function savePort(port: SerialPort, writeParser: SlipEncoder, readParser: SlipDecoder) {
   devices.set(port.path, {
     connected: true,
     port,
+    writeParser,
+    readParser,
   })
 }
 
@@ -146,7 +148,7 @@ export async function connectToCoordinator(path: string) {
     setupDataHandlers(readParser, writeParser)
 
     // mark device as saved
-    savePort(port)
+    savePort(port, writeParser, readParser)
 
     // start communication by sending first data request
     sendDataRequest(writeParser)

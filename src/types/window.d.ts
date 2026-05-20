@@ -26,6 +26,7 @@ declare global {
       closeApp: () => unknown
 
       onJam: (callback: (typeId: number, sensorId: number) => unknown) => void
+      toggleMockSensors: (enabled: boolean) => Promise<{ success: boolean; message: string }>
     }
   }
 }
