@@ -116,12 +116,12 @@ To run the application in dev mode, use `npm run start`.
 #### Run
 After running the application in dev mode, with the DevTools opened, add a few sensors and in Console, run:
 ```
-window.electron.ipcRenderer.invoke('toggle-mock-sensors', true)
+window.electronAPI.toggleMockSensors(true)
 ```
 
 to see them start sending data, to disable: 
 ```
-window.electron.ipcRenderer.invoke('toggle-mock-sensors', false)
+window.electronAPI.toggleMockSensors(false)
 ```
 #### Build
 To build the application into `out/` run `npm run make`.
