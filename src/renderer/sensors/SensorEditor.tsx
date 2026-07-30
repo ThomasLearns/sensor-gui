@@ -175,6 +175,19 @@ export const SensorEditor: Component<{
           <p class="validator-hint mt-1">Must be between -90 and 90</p>
         </div>
 
+        <div class="flex items-center justify-between mt-2">
+          <button
+            type="button"
+            class="btn btn-xs btn-outline btn-secondary"
+            onClick={(event) => {
+              event.stopPropagation()
+              sensor.data.getResetMovementCalibration()?.()
+            }}
+          >
+            Calibrate Again
+          </button>
+        </div>
+
         {/* delete button */}
         <div class="flex flex-col items-center">
           <div
