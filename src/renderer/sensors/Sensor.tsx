@@ -37,6 +37,13 @@ export const Sensor: Component<{
 
   const owner = getOwner()
 
+  function renderSensorLabel(sensor: SensorData) {
+    if (sensor.type === 'ultrasonic') {
+      return sensor.routNumber
+    } else if (sensor.type === 'TTR') {
+      return 'T'
+    }
+  } 
   // when the indicator is clicked, upon up a sidebar
   // to edit the sensor's data
   function openSensorProperties(event?: MouseEvent) {
@@ -167,7 +174,7 @@ export const Sensor: Component<{
           font-size="20"
           transform={`translate(${getX()}, ${getY()})`}
         >
-          {sensor.data.routNumber}
+          {renderSensorLabel(sensor.data)}
         </text>
         {/* circle around label */}
       </g>

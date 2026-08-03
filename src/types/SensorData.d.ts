@@ -31,9 +31,17 @@ export type UltrasonicData = SpecificSensor & {
   setIsConnected: Setter<boolean>
 }
 
+export type testData = {
+  type: 'testType'
+}
+
+export type DroneLOS_tracker = {
+  type: 'TTR'
+}
+
 // union of all sensor types
 // (only one currently, but more may be added in the future)
-export type SensorType = UltrasonicData
+export type SensorType = UltrasonicData | testData | TTR
 
 // all the information needed to display a sensor
 export type SensorData = {
