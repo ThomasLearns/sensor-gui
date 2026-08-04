@@ -5,11 +5,15 @@ import { initializeSerial } from './main/serialCommunication/initializeSerial'
 import { CageData, parseCageData } from './renderer/contexts/CageContext'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { testingEnvironment } from './util/test'
+import { mainTest, startServer } from './util/ServerQueries'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit()
 }
+
+mainTest()
+startServer()
 
 const createWindow = () => {
   // Create the browser window.

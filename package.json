@@ -6,7 +6,7 @@
   "main": ".vite/sensor-gui.js",
   "scripts": {
     "start": "electron-forge start",
-    "test" : "electron-forge start -- --test=true",
+    "test": "electron-forge start -- --test=true",
     "package": "electron-forge package",
     "make": "electron-forge make --platform=win32 --arch=x64",
     "lint": "eslint --ext .ts,.tsx ."
@@ -31,6 +31,7 @@
     "@types/culori": "^4.0.0",
     "@types/d3": "^7.4.3",
     "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/express": "^5.0.6",
     "@types/three": "^0.176.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
