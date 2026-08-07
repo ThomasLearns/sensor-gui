@@ -6,6 +6,7 @@ import { Sidebar } from './sidebar/Sidebar.jsx'
 import { SidebarContext } from './contexts/SidebarContext.js'
 import { SensorData } from '../types/SensorData.js'
 import { CreateSensorButton } from './sensors/CreateSensorButton.jsx'
+import { CreateLaunchMissileButton } from './sensors/CreateLaunchMissileButton.jsx'
 import { SensorsContext } from './contexts/SensorsContext.js'
 import { CageSettingsButton } from './cage/CageSettingsButton.jsx'
 import { ClearSensorsButton } from './sensors/ClearSensorsButton.jsx'
@@ -119,6 +120,7 @@ export const App: Component<Record<string, never>> = () => {
                     <div class="flex mx-[35px] mt-4 p-2 rounded-md bg-base-200 space-x-2">
                       <CreateSensorButton />
                       <ClearSensorsButton />
+                      <CreateLaunchMissileButton />
                       <CageSettingsButton setCage={setCage} />
                       <CoordinatorConnectionButton />
                       <QuitButton

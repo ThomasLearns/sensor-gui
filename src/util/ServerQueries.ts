@@ -1,4 +1,5 @@
 import express from 'express'
+import { ipcMain } from 'electron'
 
 function mainTest() {
     console.log('test main')
@@ -7,6 +8,10 @@ function mainTest() {
 }
 
 function startServer() {
+    ipcMain.on('launchMissileRequest', () => {
+        console.log("ServerQueries.ts: received launch missile request from renderer")
+        launchQuery();
+    })
     const server = express()
     const port = 3000
 
@@ -31,4 +36,12 @@ async function testQuery() {
     console.log("ServerQueries.ts: testQuery() END\n")
 }
 
-export {mainTest, startServer, testQuery}
+// url will need to be changed for PROD
+async function launchQuery() {
+    const url = 'http://localhost:3003/pingMissileLaunch';
+    const data = await fetch(url).catch((error) => {
+        console.error("Error in launchQuery():", error);
+    })
+}
+
+export {mainTest, startServer, testQuery, launchQuery}
