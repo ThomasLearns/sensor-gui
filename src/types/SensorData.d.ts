@@ -1,7 +1,7 @@
 import { Accessor, Component, Setter } from 'solid-js'
 
 interface SpecificSensor {
-  type: string
+  type: 'ultrasonic' | 'virtual_missile_launcher'
   renderer: Component<{}> // component used to render the sensor
 
   // already handled by "type" field, but other components of the sensor
@@ -41,7 +41,13 @@ export type DroneLOS_tracker = {
 
 // union of all sensor types
 // (only one currently, but more may be added in the future)
-export type SensorType = UltrasonicData | testData | TTR
+export type SensorType = UltrasonicData | testData | TTR | VirtualMissileLauncherData
+
+export type VirtualMissileLauncherData = SpecificSensor & {
+  type: 'virtual_missile_launcher'
+  measuringAngle: number
+  sensorTypeId: 2
+}
 
 // all the information needed to display a sensor
 export type SensorData = {

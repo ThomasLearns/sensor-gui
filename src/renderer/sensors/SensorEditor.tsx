@@ -52,7 +52,7 @@ export const SensorEditor: Component<{
         {/* type */}
         <div>
           <label class="select select-xs border w-full validator">
-            <span class="label">Sensor Type:</span>
+            <span class="label">Device:</span>
             <select
               onInput={(event) => {
                 if (!(event.currentTarget.value in sensorTypeLabels))
