@@ -52,17 +52,16 @@ export const SensorEditor: Component<{
         {/* type */}
         <div>
           <label class="select select-xs border w-full validator">
-            <span class="label">Sensor Type:</span>
+            <span class="label">Device Type:</span>
             <select
               onInput={(event) => {
-                if (!(event.currentTarget.value in sensorTypeLabels))
-                  throw new Error(
-                    `recieved "${event.currentTarget.value}" as a sensor type`
-                  )
+                const nextType = event.currentTarget.value as keyof typeof sensorTypeLabels
+
+                sensors.setSensors(sensor.index(), 'type', nextType)
                 sensors.setSensors(
                   sensor.index(),
-                  'type',
-                  event.currentTarget.value as keyof typeof sensorTypeLabels
+                  'sensorTypeId',
+                  nextType === 'virtual_missile_launcher' ? 2 : 1,
                 )
               }}
               value={sensor.data.type}
