@@ -49,9 +49,17 @@ export type VirtualMissileLauncherData = SpecificSensor & {
   sensorTypeId: 2
 }
 
+export type testData = {
+  type: 'testType'
+}
+
+export type DroneLOS_tracker = {
+  type: 'TTR'
+}
+
 // union of all sensor types
 // (only one currently, but more may be added in the future)
-export type SensorType = UltrasonicData | VirtualMissileLauncherData
+export type SensorType = UltrasonicData | testData | TTR | VirtualMissileLauncherData
 
 // all the information needed to display a sensor
 export type SensorData = {

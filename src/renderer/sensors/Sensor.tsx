@@ -40,10 +40,12 @@ export const Sensor: Component<{
   function renderSensorLabel(sensor: SensorData) {
     if (sensor.type === 'ultrasonic') {
       return sensor.routNumber
+    } else if (sensor.type === 'TTR') {
+      return 'T'
     } else if (sensor.type === 'virtual_missile_launcher') {
       return 'M'
     }
-  } 
+  }  
 
   // when the indicator is clicked, upon up a sidebar
   // to edit the sensor's data
