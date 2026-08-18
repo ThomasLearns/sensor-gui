@@ -12,6 +12,11 @@ function startServer() {
         console.log("ServerQueries.ts: received launch missile request from renderer")
         launchQuery();
     })
+    ipcMain.on('launcherLocPing', (event, x: number, y: number) => {
+        console.log(`ServerQueries.ts: received launcher location ping from renderer: x=${x}, y=${y}`)
+        launcherLocQuery(x, y);
+        // Here you can handle the x and y coordinates as needed
+    })
     const server = express()
     const port = 3000
 
@@ -41,6 +46,18 @@ async function launchQuery() {
     const url = 'http://localhost:3003/pingMissileLaunch';
     const data = await fetch(url).catch((error) => {
         console.error("Error in launchQuery():", error);
+    })
+}
+
+async function launcherLocQuery(x: number, y: number) {
+    const url = `http://localhost:3003/pingLauncherLoc`;
+    const payload = { x, y };
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     })
 }
 

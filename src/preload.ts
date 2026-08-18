@@ -24,4 +24,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   toggleMockSensors: (enabled: boolean) =>
     ipcRenderer.invoke('toggle-mock-sensors', enabled), 
   sendLaunchMissileRequest: () => ipcRenderer.send('launchMissileRequest'),
+  sendLauncherLocPing: (x: number, y: number) => ipcRenderer.send('launcherLocPing', x, y),
 })
