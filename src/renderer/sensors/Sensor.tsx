@@ -17,6 +17,7 @@ import { SetStoreFunction } from 'solid-js/store'
 import { SensorContext } from '../contexts/SensorContext.js'
 import { CageContext } from '../contexts/CageContext.js'
 import { DragContext } from '../contexts/DragContext.js'
+import { launchQuery } from '../../util/ServerQueries.js'
 
 // Visual indicator for a sensor and its pings
 export const Sensor: Component<{
@@ -97,7 +98,22 @@ export const Sensor: Component<{
     })
   })
 
+  
   const [getMouseDown, setMouseDown] = createSignal(false)
+  
+  createEffect(() => {
+    console.log(`Mouse down: ${getMouseDown()}`)  
+    // console.log(sensor.data)
+    if (sensor.data.type === 'virtual_missile_launcher') {
+      console.log(`Sensor type: ${sensor.data.type}`)
+      console.log(sensor.data.xFeet, sensor.data.yFeet)
+      if (getMouseDown() == false) {
+        console.log("LAUNCH QUERY HERE")
+        window.electronAPI.sendLauncherLocPing(sensor.data.xFeet, sensor.data.yFeet)
+        // launchQuery();
+      }
+    }
+  })
 
   // drag and drop the sensor
   function drag(event: MouseEvent) {
@@ -128,6 +144,7 @@ export const Sensor: Component<{
               (boundingRect.bottom - boundingRect.top)) *
             cage.width,
     )
+    console.log("drag")
   }
 
   const [getDragging, setDragging] = createSignal(false)

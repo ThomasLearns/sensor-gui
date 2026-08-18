@@ -61,6 +61,12 @@ export type DroneLOS_tracker = {
 // (only one currently, but more may be added in the future)
 export type SensorType = UltrasonicData | testData | TTR | VirtualMissileLauncherData
 
+export type VirtualMissileLauncherData = SpecificSensor & {
+  type: 'virtual_missile_launcher'
+  measuringAngle: number
+  sensorTypeId: 2
+}
+
 // all the information needed to display a sensor
 export type SensorData = {
   // position in the cage of the sensor
