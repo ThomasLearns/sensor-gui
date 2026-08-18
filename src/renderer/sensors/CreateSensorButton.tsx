@@ -16,6 +16,10 @@ export const CreateSensorButton: Component<{}> = () => {
       undefined | ((centimeters: number) => void)
     >()
     const [getIsConnected, setIsConnected] = createSignal(false)
+    const [getIsMoving, setIsMoving] = createSignal(false)
+    const [getResetMovementCalibration, setResetMovementCalibration] = createSignal<
+      undefined | (() => void)
+    >()
     const newSensor: SensorData = {
       xFeet: 0,
       yFeet: 0,
@@ -31,6 +35,10 @@ export const CreateSensorButton: Component<{}> = () => {
       sensorTypeId: 1,
       getIsConnected,
       setIsConnected,
+      getIsMoving,
+      setIsMoving,
+      getResetMovementCalibration,
+      setResetMovementCalibration,
     }
 
     sensors.setSensors(sensors.sensors.length, newSensor)
