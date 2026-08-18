@@ -1,8 +1,9 @@
 import { ConicalBeam } from '../../beams/conical/ConicalBeam.jsx'
 import { UltrasonicData } from '../../../types/SensorData.js'
-import { SensorContext } from '../../contexts/SensorContext.js'
-import { useContextOrThrow } from '../../../util/useContextOrThrow.js'
 import { Show } from 'solid-js'
+import { useContextOrThrow } from '../../../util/useContextOrThrow.js'
+import { SensorContext } from '../../contexts/SensorContext.js'
+
 
 // render graphics used for displaying an ultrasonic sensor and its pings
 export const UltrasonicRenderer: UltrasonicData['renderer'] = () => {
@@ -14,6 +15,7 @@ export const UltrasonicRenderer: UltrasonicData['renderer'] = () => {
       <Show when={sensor.data.type === 'ultrasonic'}>
         <ConicalBeam />
       </Show>
+      {/* <ConicalBeam /> */}
     </>
   )
 }
