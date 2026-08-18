@@ -17,6 +17,7 @@ import { ConicalBeamPing } from './ConicalBeamPing.jsx'
 import { Brush } from 'three-bvh-csg'
 import { Portal } from 'solid-js/web'
 import { clamp } from 'three/src/math/MathUtils.js'
+import { MovementDetector } from '../../../util/movementDetection.js'
 
 // Time to consider a sensor connected after receiving data (milliseconds)
 const CONNECTION_TIMEOUT = 1000
@@ -27,6 +28,14 @@ export const ConicalPingHandler: Component<{
 }> = (props) => {
   const grid = useContextOrThrow(GridContext)
   const sensor = useContextOrThrow(SensorContext)
+  const movementDetector = new MovementDetector()
+
+  const resetMovementCalibration = () => {
+    movementDetector.reset()
+    sensor.data.setIsMoving(false)
+  }
+
+  sensor.data.setResetMovementCalibration(() => resetMovementCalibration)
 
   // each ping has a memo for its distance. We use this component as the owner
   // context for these memos
@@ -50,6 +59,13 @@ export const ConicalPingHandler: Component<{
       const meters = centimeters / 100
       const feet = meters / metersPerFoot
 
+      const isMoving = movementDetector.update(centimeters)
+      sensor.data.setIsMoving(isMoving)
+
+      if (sensor.data.getIsMoving()) {
+        console.log('Sensor is detecting movement.')
+      }
+
       // Mark sensor as connected
       sensor.data.setIsConnected(true)
 
@@ -70,6 +86,7 @@ export const ConicalPingHandler: Component<{
       )
       // reset the ping height opacity
       fadeStartTime = performance.now()
+
       // create the ping to be displayed
       setPingsData('pings', pinsData.pings.length, { distance: feet })
     })

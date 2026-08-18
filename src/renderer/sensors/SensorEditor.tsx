@@ -52,17 +52,16 @@ export const SensorEditor: Component<{
         {/* type */}
         <div>
           <label class="select select-xs border w-full validator">
-            <span class="label">Device:</span>
+            <span class="label">Device Type:</span>
             <select
               onInput={(event) => {
-                if (!(event.currentTarget.value in sensorTypeLabels))
-                  throw new Error(
-                    `recieved "${event.currentTarget.value}" as a sensor type`
-                  )
+                const nextType = event.currentTarget.value as keyof typeof sensorTypeLabels
+
+                sensors.setSensors(sensor.index(), 'type', nextType)
                 sensors.setSensors(
                   sensor.index(),
-                  'type',
-                  event.currentTarget.value as keyof typeof sensorTypeLabels
+                  'sensorTypeId',
+                  nextType === 'virtual_missile_launcher' ? 2 : 1,
                 )
               }}
               value={sensor.data.type}
@@ -173,6 +172,19 @@ export const SensorEditor: Component<{
             <span class="label">deg</span>
           </label>
           <p class="validator-hint mt-1">Must be between -90 and 90</p>
+        </div>
+
+        <div class="flex items-center justify-between mt-2">
+          <button
+            type="button"
+            class="btn btn-xs btn-outline btn-secondary"
+            onClick={(event) => {
+              event.stopPropagation()
+              sensor.data.getResetMovementCalibration()?.()
+            }}
+          >
+            Calibrate Again
+          </button>
         </div>
 
         {/* delete button */}

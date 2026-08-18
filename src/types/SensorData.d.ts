@@ -14,6 +14,12 @@ interface SpecificSensor {
   // Track connection status
   getIsConnected: Accessor<boolean>
   setIsConnected: Setter<boolean>
+
+  getIsMoving: Accessor<boolean>
+  setIsMoving: Setter<boolean>
+
+  getResetMovementCalibration: Accessor<undefined | (() => void)>
+  setResetMovementCalibration: Setter<undefined | (() => void)>
 }
 
 // information needed to describe an ultrasonic sensor
@@ -29,6 +35,18 @@ export type UltrasonicData = SpecificSensor & {
   
   getIsConnected: Accessor<boolean>
   setIsConnected: Setter<boolean>
+
+  getIsMoving: Accessor<boolean>
+  setIsMoving: Setter<boolean>
+
+  getResetMovementCalibration: Accessor<undefined | (() => void)>
+  setResetMovementCalibration: Setter<undefined | (() => void)>
+}
+
+export type VirtualMissileLauncherData = SpecificSensor & {
+  type: 'virtual_missile_launcher'
+  measuringAngle: number
+  sensorTypeId: 2
 }
 
 export type testData = {
