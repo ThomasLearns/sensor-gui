@@ -4,6 +4,31 @@ The role of the sensor GUI is to display pings from red team's sensor network to
 
 The sensor GUI receives its ping data from the coordinator Arduino UNO over serial.
 
+This codebase is for a sensor GUI application, built with TypeScript and Electron, using Vite for bundling. Its main purpose is to provide a graphical interface for interacting with sensor devices, over serial communication.
+
+### Key Components:
+
+- **src/main/serialCommunication/**: Handles communication with sensor devices via serial ports. Files like pingHandling.ts manage receiving and interpreting data packets from devices, such as sensor readings or status messages.
+- **src/renderer/**: Contains React components for the user interface. Components like App.tsx, QuitButton.tsx, and others build the GUI, including sensor visualization, settings, and controls.
+- **src/renderer/beams/**, **src/renderer/cage/**, **src/renderer/grid/**, **src/renderer/sensors/**: Specialized UI components for visualizing sensor data, grid layouts, cages, and beams.
+- **src/renderer/contexts/**: Provides React context for sharing state across components (e.g., sensor data, grid settings).
+- **src/types/**: TypeScript type definitions for sensor data, device status, and other entities.
+- **src/util/**: Utility functions for common tasks (e.g., error handling, math operations).
+
+### How It Works:
+
+- Serial Communication: The app connects to sensor devices via serial ports. It sends requests and receives packets, which are decoded and interpreted (see pingHandling.ts).
+- Data Handling: Incoming data packets are parsed to extract sensor readings or status updates. These are then sent to the renderer/UI.
+- UI Rendering: The React components display sensor data, allow user interaction (e.g., editing settings, connecting devices), and visualize sensor readings (such as distances or jams).
+- State Management: Contexts are used to manage shared state, like sensor lists or grid settings, across the UI.
+
+### Typical Workflow:
+
+User launches the app.
+App connects to sensor devices.
+Sensor data is received, parsed, and visualized in the GUI.
+User can interact with sensors, adjust settings, and view real-time data.
+
 ## User Guide
 
 ### Cage
@@ -96,6 +121,8 @@ The sensor id indicates the ROUT number of a sensor. If it is `0`, it matches al
 
 Only sensors that match the sensor type and the sensor id will be jammed.
 
+There is currently a 60 seconds in milliseconds time limit on the jamming button and a 1 second gap indicates button release currently implemented. Further button presses/holds will not jam the GUI upon restart. Numbers can be changed upon future considerations.
+
 ### Project Structure
 
 The sensor GUI is an **electronjs** application.
@@ -111,13 +138,14 @@ It uses **tailwindcss** for css classes and **daisyui** for ui primitives and th
 ### Development
 
 #### Run
-To run the application in dev mode, use `npm run start`.
+To run the application in dev mode, use `npm start` at the root directory of the repository.
 
-#### Run
+#### Run Mock Sensors
 After running the application in dev mode, with the DevTools opened, add a few sensors and in Console, run:
 ```
 window.electronAPI.toggleMockSensors(true)
 ```
+![](./images/Screenshot%202026-08-18%20161818.png)
 
 to see them start sending data, to disable: 
 ```
@@ -140,3 +168,11 @@ git push origin v4.0.0
 ```
 
 This should start a runner on Spork that will build the project and create a release (may take 5-10 minutes).
+
+## What can go wrong with the Sensors:
+
+- Run into the problem of the ultrasonic program sending the "Unsupported packet type" debug log instead of the actual sensor data (Refers to sensor-network README.md).
+
+- GUI reset if laptop goes to sleep
+
+- Potential memory leak issues?
