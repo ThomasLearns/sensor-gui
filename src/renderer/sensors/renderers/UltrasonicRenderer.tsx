@@ -3,7 +3,6 @@ import { UltrasonicData } from '../../../types/SensorData.js'
 import { SensorContext } from '../../contexts/SensorContext.js'
 import { useContextOrThrow } from '../../../util/useContextOrThrow.js'
 import { Show } from 'solid-js'
-
 // render graphics used for displaying an ultrasonic sensor and its pings
 export const UltrasonicRenderer: UltrasonicData['renderer'] = () => {
   const sensor = useContextOrThrow(SensorContext)

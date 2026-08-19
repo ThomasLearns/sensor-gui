@@ -4,11 +4,16 @@ import started from 'electron-squirrel-startup'
 import { initializeSerial } from './main/serialCommunication/initializeSerial'
 import { CageData, parseCageData } from './renderer/contexts/CageContext'
 import { readFileSync, writeFileSync } from 'node:fs'
+import { testingEnvironment } from './util/test'
+import { mainTest, startServer } from './util/ServerQueries'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit()
 }
+
+mainTest()
+startServer()
 
 const createWindow = () => {
   // Create the browser window.
@@ -70,6 +75,8 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
+
+testingEnvironment()
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
