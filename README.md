@@ -17,17 +17,17 @@ This codebase is for a sensor GUI application, built with TypeScript and Electro
 
 ### How It Works:
 
-- Serial Communication: The app connects to sensor devices via serial ports. It sends requests and receives packets, which are decoded and interpreted (see pingHandling.ts).
+- Serial Communication: The app connects to sensor devices via serial ports. It sends requests and receives packets, which are decoded and interpreted (see **pingHandling.ts**).
 - Data Handling: Incoming data packets are parsed to extract sensor readings or status updates. These are then sent to the renderer/UI.
 - UI Rendering: The React components display sensor data, allow user interaction (e.g., editing settings, connecting devices), and visualize sensor readings (such as distances or jams).
 - State Management: Contexts are used to manage shared state, like sensor lists or grid settings, across the UI.
 
 ### Typical Workflow:
 
-User launches the app.
-App connects to sensor devices.
-Sensor data is received, parsed, and visualized in the GUI.
-User can interact with sensors, adjust settings, and view real-time data.
+- User launches the app.
+- App connects to sensor devices.
+- Sensor data is received, parsed, and visualized in the GUI.
+- User can interact with sensors, adjust settings, and view real-time data.
 
 ## User Guide
 
